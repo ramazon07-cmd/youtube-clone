@@ -1,0 +1,68 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv/
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Media & Static (optional depending on setup)
+media/
+staticfiles/
+
+# Environment variables
+.env
+.env.*
+
+# Migrations (optional if you don't want them tracked)
+# */migrations/*
+# !*/migrations/__init__.py
+
+# IDEs
+.vscode/
+.idea/
+
+# Mac
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Testing / coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Celery
+celerybeat-schedule
+
+# Logs
+*.log
+
+# Temporary files
+*.swp
+*.swo
+*~
+
+# Node (if using frontend tools)
+node_modules/
+
+# Docker
+*.pid
+*.seed
+*.pid.lock
