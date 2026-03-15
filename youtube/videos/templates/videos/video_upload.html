@@ -11,7 +11,7 @@
 {% block content %}
 <div class="upload-overlay" id="uploadOverlay">
     <div class="upload-progress-container">
-        <div class="upload=spinner"></div>
+        <div class="upload-spinner"></div>
         <h2 id="uploadStatus">Uploading Video...</h2>
         <p class="upload-warning">Please don't close this page</p>
     </div>
@@ -32,7 +32,7 @@
                                 <li>{{error}}</li>
                             {% endfor %}
                         {% endfor %}
-                        {% for error in form.non_field_errros %}
+                        {% for error in form.non_field_errors %}
                             <li>{{ error }}</li>
                         {% endfor %}
                     </ul>
@@ -105,12 +105,16 @@ $("uploadForm").onsubmit = async e => {
 
     $("uploadOverlay").classList.add("active")
     $("submitBtn").disabled = true;
-    $('errorContainer').innerHtml = ""
+    $('errorContainer').innerHTML = ""
     window.onbeforeunload = () => "Upload in progress"
 
     try {
         const res = await fetch("{% url 'videos:video_upload_submit' %}", {
             method: "POST",
+            headers: {
+                "X-CSRFToken": document.cookie.split(";")
+                    .find(c => c.trim().startsWith("csrftoken="))?.split("=")[1]
+            },
             body: new FormData(e.target)
         })
         const data = await res.json()

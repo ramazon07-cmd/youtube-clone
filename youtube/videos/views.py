@@ -22,14 +22,12 @@ def video_upload(request):
     form = VideoUploadForm(request.POST, request.FILES)
     if form.is_valid():
         video_file = form.cleaned_data['video_file']
-        custom_thumbnail = request.POST.get('custom_thumbnail', "")
+        custom_thumbnail = request.POST.get('thumbnail_data', "")
         
         try:
             result = upload_video(
-                video_file=video_file,
-                title=form.cleaned_data['title'],
-                description=form.cleaned_data['description'],
-                custom_thumbnail=custom_thumbnail
+                file_data=video_file,
+                file_name=video_file.name
             )
             thumbnail_url = ""
             if custom_thumbnail and custom_thumbnail.startswith('data:image'):
@@ -37,7 +35,7 @@ def video_upload(request):
                     base_name = video_file.name.rsplit('.', 1)[0]
                     thumbnail_result = upload_thumbnail(
                         file_data=custom_thumbnail,
-                        base_name=base_name + "_thumb.jpg"
+                        file_name=base_name + "_thumb.jpg"
                     )
                     thumbnail_url = thumbnail_result['url']
                 except Exception as e:
@@ -47,7 +45,7 @@ def video_upload(request):
                 title=form.cleaned_data['title'],
                 description=form.cleaned_data['description'],
                 file_id=result['file_id'],
-                video_url=result['video_url'],
+                video_url=result['url'],
                 thumbnail_url=thumbnail_url
             )
 
