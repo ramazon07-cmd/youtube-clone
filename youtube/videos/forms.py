@@ -1,74 +1,42 @@
 from django import forms
 
+
 class VideoUploadForm(forms.Form):
+
     title = forms.CharField(
-        max_length=255,
+        max_length=200,
         widget=forms.TextInput(
             attrs={
-                'class': 'form-input',
-                'placeholder': 'Enter video title'
+                "class": "form-input",
+                "placeholder": "Enter video title"
             }
-            ),
-        required=True
+        )
     )
     description = forms.CharField(
+        required=False,
         widget=forms.Textarea(
             attrs={
-                'class': 'form-input',
-                'placeholder': 'Enter video description'
+                "class": "form-input",
+                "placeholder": "Enter video description",
+                "rows": 4
             }
-            ),
-        required=False
+        )
     )
     video_file = forms.FileField(
-        widget=forms.FileInput(
-            attrs={
-                'class': 'form-input',
-                'placeholder': 'Choose video file',
-                'accept': 'video/*'
-            }
-            ),
+        widget=forms.FileInput(attrs={
+            "class": "form-input",
+            "accept": "video/*"
+        })
     )
 
     def clean_video_file(self):
-        video_file = self.cleaned_data.get('video_file')
-        if video_file:
-            if video_file.size > 100 * 1024 * 1024:  # Limit to 100MB
-                raise forms.ValidationError("Video file size must be under 100MB.")
-            allowed_types = ['video/mp4', 'video/avi', 'video/mov', 'video/wmv']
-            if video_file.content_type not in allowed_types:
-                raise forms.ValidationError("Unsupported video format. Allowed formats: MP4, AVI, MOV, WMV.")
-            return video_file
-        else:
-            raise forms.ValidationError("Please upload a video file.")
-        
+        video = self.cleaned_data.get("video_file")
+        if video:
+            if video.size > 100 * 1024 * 1024:
+                raise forms.ValidationError("Video must be under 100mb")
 
+            allowed_types = ["video/mp4", "video/webm", "video/quicktime", "video/x-msvideo"]
+            if video.content_type not in allowed_types:
+                raise forms.ValidationError("This video type is not allowed.")
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        return video

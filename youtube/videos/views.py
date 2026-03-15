@@ -22,31 +22,34 @@ def video_upload(request):
     form = VideoUploadForm(request.POST, request.FILES)
     if form.is_valid():
         video_file = form.cleaned_data['video_file']
-        custom_thumbnail = request.POST.get('thumbnail_data', "")
-        
+        custom_thumbnail = request.POST.get("thumbnail_data", "")
+
         try:
             result = upload_video(
-                file_data=video_file,
+                file_data=video_file.read(),
                 file_name=video_file.name
             )
+
             thumbnail_url = ""
-            if custom_thumbnail and custom_thumbnail.startswith('data:image'):
+            if custom_thumbnail and custom_thumbnail.startswith("data:image"):
                 try:
-                    base_name = video_file.name.rsplit('.', 1)[0]
-                    thumbnail_result = upload_thumbnail(
+                    base_name = video_file.name.rsplit(".", 1)[0]
+                    thumb_result = upload_thumbnail(
                         file_data=custom_thumbnail,
                         file_name=base_name + "_thumb.jpg"
                     )
-                    thumbnail_url = thumbnail_result['url']
+                    thumbnail_url = thumb_result["url"]
                 except Exception as e:
-                    print(f"Thumbnail upload failed: {e}")
+                    print(e)
+                    pass
+
             video = Video.objects.create(
                 user=request.user,
                 title=form.cleaned_data['title'],
                 description=form.cleaned_data['description'],
-                file_id=result['file_id'],
-                video_url=result['url'],
-                thumbnail_url=thumbnail_url
+                file_id=result["file_id"],
+                video_url=result["url"],
+                thumbnail_url=thumbnail_url,
             )
 
             return JsonResponse({
@@ -55,17 +58,18 @@ def video_upload(request):
                 "message": "Video uploaded successfully"
             })
         except Exception as e:
-            return JsonResponse({'success': False, 'error': str(e)})
+            return JsonResponse({"success": False, "error": str(e)})
+
     errors = []
-    for field, error_list in form.errors.items():
-        for error in error_list:
-            errors.append(f"{field}: {error}" if field != '__all__' else error)
-    return JsonResponse({'success': False, 'errors': ";".join(errors)})
+    for field, field_errors in form.errors.items():
+        for error in field_errors:
+            errors.append(f"{field}: {error}" if field != "__all__" else error)
+    return JsonResponse({"success": False, "errors": ";".join(errors)})
+
 
 @login_required
 def video_upload_page(request):
-    form = VideoUploadForm()
-    return render(request, 'videos/video_upload.html', {'form': form})
+    return render(request, "videos/video_upload.html", {"form": VideoUploadForm()})
 
 
 

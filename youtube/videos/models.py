@@ -1,8 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-# Create your models here.
-
 class Video(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
@@ -22,6 +20,21 @@ class Video(models.Model):
     class Meta:
         ordering = ['-created_at']
 
-
     def __str__(self):
         return self.title
+
+    @property
+    def display_thumbnail_url(self):
+        if self.thumbnail_url:
+            return self.thumbnail_url
+        # auto-generate thumbnail from ImageKit if none uploaded
+        return f"{self.video_url}/ik-thumbnail.jpg"
+
+    @property
+    def streaming_url(self):
+        return self.video_url 
+
+    @property
+    def optimized_url(self):
+        # fallback direct video URL
+        return self.video_url

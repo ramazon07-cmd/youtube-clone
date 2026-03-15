@@ -1,52 +1,43 @@
 from imagekitio import ImageKit
-import os
 from imagekitio.models.UploadFileRequestOptions import UploadFileRequestOptions
+import os
+import base64
 
+_client = None
 
 def get_imagekit_client():
-    return ImageKit(
-        public_key=os.getenv("IMAGEKIT_PUBLIC_KEY"),
-        private_key=os.getenv("IMAGEKIT_PRIVATE_KEY"),
-        url_endpoint=os.getenv("IMAGEKIT_URL_ENDPOINT")
-    )    
-
-def upload_video(file_data, file_name, folder="videos/"):
-    client = get_imagekit_client()
-    response = client.upload_file(
-        file=file_data.read(),
-        file_name=file_name,
-        options=UploadFileRequestOptions(
-            folder=folder,
-            use_unique_file_name=True,
+    global _client
+    if _client is None:
+        _client = ImageKit(
+            public_key=os.environ.get("IMAGEKIT_PUBLIC_KEY"),
+            private_key=os.environ.get("IMAGEKIT_PRIVATE_KEY"),
+            url_endpoint=os.environ.get("IMAGEKIT_URL_ENDPOINT")
         )
-    )
-    return {
-        "file_id": response.file_id,
-        "url": response.response_metadata.raw["url"]
-    }
 
-def upload_thumbnail(file_data, file_name, folder="thumbnails/"):
-    import base64
+    
+    return _client
+
+def upload_video(file_data: bytes, file_name: str, folder: str = "/videos/") -> dict:
+    client = get_imagekit_client()
+    encoded = base64.b64encode(file_data).decode("utf-8")
+    response = client.upload_file(
+        file=encoded,
+        file_name=file_name,
+        options=UploadFileRequestOptions(folder=folder)
+    )
+    return {"file_id": response.file_id, "url": response.url}
+
+
+def upload_thumbnail(file_data: str | bytes, file_name: str, folder: str = "/thumbnails/") -> dict:
     if isinstance(file_data, str) and file_data.startswith("data:"):
-        _, file_data = file_data.split(",", 1)
-        file_data = base64.b64decode(file_data)
-    
+        encoded = file_data.split(",", 1)[1]
+    else:
+        encoded = base64.b64encode(file_data).decode("utf-8")
+
     client = get_imagekit_client()
-    
     response = client.upload_file(
-        file=file_data,
+        file=encoded,
         file_name=file_name,
-        options=UploadFileRequestOptions(
-            folder=folder,
-            use_unique_file_name=True,
-        )
+        options=UploadFileRequestOptions(folder=folder)
     )
-    return {
-        "file_id": response.file_id,
-        "url": response.response_metadata.raw["url"]
-    }
-
-
-
-
-
+    return {"file_id": response.file_id, "url": response.url}
