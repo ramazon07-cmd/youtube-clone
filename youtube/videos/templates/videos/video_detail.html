@@ -38,7 +38,7 @@
 
         <div class="video-channel">
             <div class="channel-avatar">{{ video.user.username|slice:":1"}}</div>
-            {% comment %} <a href="{% url 'videos:channel' video.user.username %}" class="channel-name">{{ video.user.username }}</a> {% endcomment %}
+            <a href="{% url 'videos:channel' video.user.username %}" class="channel-name">{{ video.user.username }}</a>
         </div>
 
         {% if video.description %}
@@ -99,8 +99,7 @@ function deleteVideo(videoId) {
 
 function vote(videoId, voteType) {
     {% if not user.is_authenticated %}
-    window.location.href = '{% url "accounts:login "%}'
-    return
+    {% comment %} window.location.href = '{% url "accounts:login "%}' {% endcomment %}
     {% endif %}
 
     fetch(`/${videoId}/vote/`, {
