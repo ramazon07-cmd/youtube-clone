@@ -1,10 +1,37 @@
-{% extends 'base.html' %} {% load static %} {% block title %}Signed Out -
-YouTube Clone {% endblock %} {% block extra_css %}
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Chiqildi - UzTube{% endblock %}
+
+{% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/auth.css' %}" />
-{% endblock %} {% block content %}
+{% endblock %}
+
+{% block content %}
 <div class="success-container">
-  <h1>Signed Out</h1>
-  <p>You have been signed out...</p>
-  <a href="{% url 'accounts:login' %}" class="btn btn-primary">Sign In Again</a>
+  <h1 data-i18n="signedOut">Tizimdan chiqdingiz</h1>
+  <p data-i18n="signedOutDesc">Siz muvaffaqiyatli tizimdan chiqdingiz.</p>
+  <a href="{% url 'accounts:login' %}" class="btn btn-primary" data-i18n="signinAgain">Qayta kirish</a>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+Object.assign(i18n.uz, {
+  signedOut: "Tizimdan chiqdingiz",
+  signedOutDesc: "Siz muvaffaqiyatli tizimdan chiqdingiz.",
+  signinAgain: "Qayta kirish"
+});
+Object.assign(i18n.ru, {
+  signedOut: "Вы вышли из системы",
+  signedOutDesc: "Вы успешно вышли из аккаунта.",
+  signinAgain: "Войти снова"
+});
+Object.assign(i18n.en, {
+  signedOut: "Signed Out",
+  signedOutDesc: "You have been signed out successfully.",
+  signinAgain: "Sign In Again"
+});
+applyLanguage(localStorage.getItem("uztube_lang") || "uz");
+</script>
 {% endblock %}

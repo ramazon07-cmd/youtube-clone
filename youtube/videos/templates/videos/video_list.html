@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-Videos - YouTube Clone
+Videolar - UzTube
 {% endblock %}
 
 {% block extra_css %}
@@ -10,6 +10,31 @@ Videos - YouTube Clone
 {% endblock %}
 
 {% block content %}
+<section class="category-tabs">
+    <button class="category-tab active">Musiqa 🎵</button>
+    <button class="category-tab">Hazil</button>
+    <button class="category-tab">Yangiliklar</button>
+    <button class="category-tab">Sport</button>
+    <button class="category-tab">Ta'lim</button>
+    <button class="category-tab">Madaniyat</button>
+</section>
+
+<section class="trending-section">
+    <h2 data-i18n="trendingUz">Trending in Uzbekistan 🇺🇿</h2>
+    <div class="trending-list">
+        {% for video in videos|slice:":4" %}
+            <a href="{% url 'videos:video_detail' video.id %}" class="trending-item">
+                <span class="trending-rank">{{ forloop.counter }}</span>
+                <div>
+                    <p class="trending-title">{{ video.title }}</p>
+                    <p class="trending-meta">{{ video.views }} ko'rish</p>
+                </div>
+            </a>
+        {% empty %}
+            <p class="video-meta" data-i18n="noTrending">Hozircha trend videolar mavjud emas.</p>
+        {% endfor %}
+    </div>
+</section>
 {% if videos %}
 <div class="video-grid">
     {% for video in videos %}
@@ -20,10 +45,28 @@ Videos - YouTube Clone
             </div>
             <div class="video-info">
                 <h3 class="video-title">{{ video.title }}</h3>
-                <p class="video-meta">{{ video.user.username }} | {{ video.views }} views</p>
+                <p class="video-meta">{{ video.user.username }} | {{ video.views }} ko'rish</p>
             </div>
         </a>
     {% endfor %}
 </div>
 {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+Object.assign(i18n.uz, {
+    trendingUz: "Trending in Uzbekistan 🇺🇿",
+    noTrending: "Hozircha trend videolar mavjud emas."
+});
+Object.assign(i18n.ru, {
+    trendingUz: "В тренде в Узбекистане 🇺🇿",
+    noTrending: "Пока нет трендовых видео."
+});
+Object.assign(i18n.en, {
+    trendingUz: "Trending in Uzbekistan 🇺🇿",
+    noTrending: "No trending videos yet."
+});
+applyLanguage(localStorage.getItem("uztube_lang") || "uz");
+</script>
 {% endblock %}

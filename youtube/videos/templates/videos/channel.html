@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-{{ channel_name }} - YouTube Clone
+{{ channel_name }} - UzTube
 {% endblock %}
 
 {% block extra_css %}
@@ -24,7 +24,7 @@
             </div>
             <div class="video-info">
                 <h3 class="video-title">{{ video.title }}</h3>
-                <p class="video-meta">{{ video.views }} views</p>
+                <p class="video-meta">{{ video.views }} ko'rish</p>
             </div>
         </a>
     {% endfor %}
@@ -32,8 +32,8 @@
 {% else %}
 <div class="empty-state">
     <span class="empty-icon">🎬</span>
-    <h2>No Videos Yet</h2>
-    <p>This channel hasn't uploaded any videos yet.</p>
+    <h2>Hozircha video yo'q</h2>
+    <p>Bu kanal hali video yuklamagan.</p>
 </div>
 {% endif %}
 {% endblock %}

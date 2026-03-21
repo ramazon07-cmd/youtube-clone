@@ -1,55 +1,86 @@
-{% extends 'base.html' %} {% load static %} {% block title %}Sign In - YouTube
-Clone {% endblock %} {% block extra_css %}
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Kirish - UzTube{% endblock %}
+
+{% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/auth.css' %}" />
-{% endblock %} {% block content %}
+{% endblock %}
+
+{% block content %}
 <div class="auth-container">
   <div class="auth-header">
-    <h1>Welcome Back</h1>
-    <p>Sign in to continue with youtube clone</p>
+    <h1 data-i18n="welcomeBack">Xush kelibsiz</h1>
+    <p data-i18n="loginSubtitle">UzTube'da davom etish uchun tizimga kiring</p>
   </div>
 
   <form method="post" class="auth-form">
-    {% csrf_token %} {% if form.errors %}
+    {% csrf_token %}
+    {% if form.errors %}
     <ul class="error-list">
-      {% for field in form %} {% for error in field.errors %}
+      {% for field in form %}
+      {% for error in field.errors %}
       <li>{{ error }}</li>
-      {% endfor %} {% endfor %} {% for error in form.non_field_errors %}
+      {% endfor %}
+      {% endfor %}
+      {% for error in form.non_field_errors %}
       <li>{{ error }}</li>
       {% endfor %}
     </ul>
     {% endif %}
 
     <div class="form-group">
-      <label for="id_username">Username</label>
-      <input
-        type="text"
-        name="username"
-        id="id_username"
-        class="form-input"
-        placeholder="Enter your username"
-        required
-        autofocus
-      />
+      <label for="id_username" data-i18n="username">Foydalanuvchi nomi</label>
+      <input type="text" name="username" id="id_username" class="form-input" placeholder="Foydalanuvchi nomini kiriting" data-i18n-placeholder="usernamePlaceholder" required autofocus />
     </div>
 
     <div class="form-group">
-      <label for="id_password">Password</label>
-      <input
-        type="password"
-        name="password"
-        id="id_password"
-        class="form-input"
-        placeholder="Enter your password"
-        required
-      />
+      <label for="id_password" data-i18n="password">Parol</label>
+      <input type="password" name="password" id="id_password" class="form-input" placeholder="Parolingizni kiriting" data-i18n-placeholder="passwordPlaceholder" required />
     </div>
 
-    <button type="submit" class="btn-submit">Sign In</button>
+    <button type="submit" class="btn-submit" data-i18n="signin">Kirish</button>
   </form>
 
   <div class="auth-footer">
-    Don't have an account?
-    <a href="{% url 'accounts:register' %}">Create One</a>
+    <span data-i18n="noAccount">Akkauntingiz yo'qmi?</span>
+    <a href="{% url 'accounts:register' %}" data-i18n="createOne">Yaratish</a>
   </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+Object.assign(i18n.uz, {
+  welcomeBack: "Xush kelibsiz",
+  loginSubtitle: "UzTube'da davom etish uchun tizimga kiring",
+  username: "Foydalanuvchi nomi",
+  usernamePlaceholder: "Foydalanuvchi nomini kiriting",
+  password: "Parol",
+  passwordPlaceholder: "Parolingizni kiriting",
+  noAccount: "Akkauntingiz yo'qmi?",
+  createOne: "Yaratish"
+});
+Object.assign(i18n.ru, {
+  welcomeBack: "С возвращением",
+  loginSubtitle: "Войдите, чтобы продолжить на UzTube",
+  username: "Имя пользователя",
+  usernamePlaceholder: "Введите имя пользователя",
+  password: "Пароль",
+  passwordPlaceholder: "Введите пароль",
+  noAccount: "Нет аккаунта?",
+  createOne: "Создать"
+});
+Object.assign(i18n.en, {
+  welcomeBack: "Welcome Back",
+  loginSubtitle: "Sign in to continue on UzTube",
+  username: "Username",
+  usernamePlaceholder: "Enter your username",
+  password: "Password",
+  passwordPlaceholder: "Enter your password",
+  noAccount: "Don't have an account?",
+  createOne: "Create One"
+});
+applyLanguage(localStorage.getItem("uztube_lang") || "uz");
+</script>
 {% endblock %}

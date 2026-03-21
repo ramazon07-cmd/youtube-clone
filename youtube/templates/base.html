@@ -1,10 +1,16 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uz">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{% block title %}YouTube Clone{% endblock %}</title>
+    <title>{% block title %}UzTube{% endblock %}</title>
+    <meta name="description" content="UzTube - O'zbekiston uchun mahalliy video platforma." />
+    <meta property="og:title" content="UzTube - O'zbekiston video platformasi" />
+    <meta property="og:description" content="Musiqa, yangiliklar, sport va ta'lim videolarini UzTube orqali tomosha qiling." />
+    <meta property="og:image" content="{% static 'images/uztube-og.svg' %}" />
+    <meta property="og:type" content="website" />
+    <link rel="icon" type="image/svg+xml" href="{% static 'images/favicon.svg' %}" />
 
     <link rel="stylesheet" href="{% static 'css/variables.css' %}" />
     <link rel="stylesheet" href="{% static 'css/base.css' %}" />
@@ -18,37 +24,34 @@
   <body>
     <nav class="navbar">
       <a href="/" class="navbar-brand">
-        <span class="brand-icon">▶</span>
-        YouTube Clone
+        <span class="brand-icon">🎬</span>
+        <span data-i18n="brand">UzTube</span>
       </a>
       <ul class="navbar-nav">
+        <li>
+          <select id="langSwitcher" class="lang-switcher" aria-label="Language">
+            <option value="uz">O'zbek</option>
+            <option value="ru">Русский</option>
+            <option value="en">English</option>
+          </select>
+        </li>
         {% if user.is_authenticated %}
         <li>
-          <a href="{% url 'videos:video_upload' %}" class="nav-link btn-upload"
-            >Upload</a
-          >
+          <a href="{% url 'videos:video_upload' %}" class="nav-link btn-upload" data-i18n="upload">Yuklash</a>
         </li>
         <li><span class="nav-username">{{ user.username }}</span></li>
         <li>
-          <form
-            method="post"
-            action="{% url 'accounts:logout' %}"
-            class="logout-form"
-          >
+          <form method="post" action="{% url 'accounts:logout' %}" class="logout-form">
             {% csrf_token %}
-            <button type="submit" class="nav-link btn-outline logout-btn">
-              Logout
-            </button>
+            <button type="submit" class="nav-link btn-outline logout-btn" data-i18n="logout">Chiqish</button>
           </form>
         </li>
         {% else %}
         <li>
-          <a href="{% url 'accounts:login' %}" class="nav-link">Sign In</a>
+          <a href="{% url 'accounts:login' %}" class="nav-link" data-i18n="signin">Kirish</a>
         </li>
         <li>
-          <a href="{% url 'accounts:register' %}" class="nav-link btn-primary"
-            >Sign Up</a
-          >
+          <a href="{% url 'accounts:register' %}" class="nav-link btn-primary" data-i18n="signup">Ro'yxatdan o'tish</a>
         </li>
         {% endif %}
       </ul>
@@ -62,7 +65,67 @@
       </ul>
       {% endif %} {% block content %}{% endblock %}
     </main>
+    <footer class="site-footer">
+      <p>
+        <span data-i18n="footerText">© 2025 UzTube — Built by</span>
+        <a href="#" target="_blank" rel="noopener">Your Name</a> |
+        <a href="https://github.com/yourusername" target="_blank" rel="noopener" data-i18n="github">GitHub Link</a>
+      </p>
+    </footer>
 
+    <script>
+      const i18n = {
+        uz: {
+          brand: "UzTube",
+          upload: "Yuklash",
+          logout: "Chiqish",
+          signin: "Kirish",
+          signup: "Ro'yxatdan o'tish",
+          footerText: "© 2025 UzTube — Built by",
+          github: "GitHub havolasi"
+        },
+        ru: {
+          brand: "UzTube",
+          upload: "Загрузить",
+          logout: "Выйти",
+          signin: "Войти",
+          signup: "Регистрация",
+          footerText: "© 2025 UzTube — Создано",
+          github: "Ссылка GitHub"
+        },
+        en: {
+          brand: "UzTube",
+          upload: "Upload",
+          logout: "Logout",
+          signin: "Sign In",
+          signup: "Sign Up",
+          footerText: "© 2025 UzTube — Built by",
+          github: "GitHub Link"
+        }
+      };
+
+      function applyLanguage(lang) {
+        const locale = i18n[lang] || i18n.uz;
+        document.documentElement.lang = lang;
+        document.querySelectorAll("[data-i18n]").forEach((node) => {
+          const key = node.dataset.i18n;
+          if (locale[key]) node.textContent = locale[key];
+        });
+        document.querySelectorAll("[data-i18n-placeholder]").forEach((node) => {
+          const key = node.dataset.i18nPlaceholder;
+          if (locale[key]) node.placeholder = locale[key];
+        });
+        localStorage.setItem("uztube_lang", lang);
+      }
+
+      const savedLang = localStorage.getItem("uztube_lang") || "uz";
+      const switcher = document.getElementById("langSwitcher");
+      if (switcher) {
+        switcher.value = savedLang;
+        applyLanguage(savedLang);
+        switcher.addEventListener("change", (event) => applyLanguage(event.target.value));
+      }
+    </script>
     {% block extra_js %}{% endblock %}
   </body>
 </html>

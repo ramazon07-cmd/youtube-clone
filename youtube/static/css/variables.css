@@ -14,9 +14,10 @@
     --text-secondary: #aaaaaa;
     
     /* Accent colors */
-    --accent-red: #ff0033;
-    --accent-red-hover: #cc0029;
-    --accent-red-light: #ff6b6b;
+    --accent-red: #1EB2FF;
+    --accent-red-hover: #1495d9;
+    --accent-red-light: #75d1ff;
+    --accent-green: #00A878;
     
     /* Border colors */
     --border-color: #3f3f3f;

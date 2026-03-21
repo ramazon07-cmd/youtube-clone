@@ -29,7 +29,7 @@
 .form-input:focus {
     outline: none;
     border-color: var(--accent-red);
-    box-shadow: 0 0 0 3px rgba(255, 0, 51, 0.15);
+    box-shadow: 0 0 0 3px rgba(30, 178, 255, 0.18);
 }
 
 .form-input::placeholder {

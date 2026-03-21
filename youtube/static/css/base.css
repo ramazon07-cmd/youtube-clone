@@ -14,6 +14,8 @@ body {
     color: var(--text-primary);
     min-height: 100vh;
     line-height: 1.6;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Main Content Container */
@@ -21,5 +23,21 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     padding: 40px 24px;
+    width: 100%;
+    flex: 1;
+}
+
+.site-footer {
+    border-top: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+    padding: 18px 24px;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.site-footer a {
+    color: var(--accent-green);
+    text-decoration: none;
 }
 

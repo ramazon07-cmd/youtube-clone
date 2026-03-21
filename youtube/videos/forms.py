@@ -8,7 +8,7 @@ class VideoUploadForm(forms.Form):
         widget=forms.TextInput(
             attrs={
                 "class": "form-input",
-                "placeholder": "Enter video title"
+                "placeholder": "Video sarlavhasini kiriting"
             }
         )
     )
@@ -17,7 +17,7 @@ class VideoUploadForm(forms.Form):
         widget=forms.Textarea(
             attrs={
                 "class": "form-input",
-                "placeholder": "Enter video description",
+                "placeholder": "Video tavsifini kiriting",
                 "rows": 4
             }
         )

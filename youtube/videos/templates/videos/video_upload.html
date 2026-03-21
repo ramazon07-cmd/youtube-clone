@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Upload Video - YouTube Clone{% endblock %}
+{% block title %}Video yuklash - UzTube{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/videos.css' %}">
@@ -12,14 +12,14 @@
 <div class="upload-overlay" id="uploadOverlay">
     <div class="upload-progress-container">
         <div class="upload-spinner"></div>
-        <h2 id="uploadStatus">Uploading Video...</h2>
-        <p class="upload-warning">Please don't close this page</p>
+        <h2 id="uploadStatus">Video yuklanmoqda...</h2>
+        <p class="upload-warning">Iltimos, sahifani yopmang</p>
     </div>
 </div>
 
 <div class="upload-container">
     <div class="upload-card">
-        <h1>Upload Video</h1>
+        <h1>Video yuklash</h1>
 
         <form method="post" enctype="multipart/form-data" class="upload-form" id="uploadForm">
             {% csrf_token %}
@@ -40,36 +40,36 @@
             </div>
 
             <div class="form-group">
-                <label for="id_title">Title</label>
-                <input type="text" name="title" id="id_title" class="form-input" placeholder="Enter video title" value="{{ form.title.value|default:'' }}" required/>
+                <label for="id_title">Sarlavha</label>
+                <input type="text" name="title" id="id_title" class="form-input" placeholder="Video sarlavhasini kiriting" value="{{ form.title.value|default:'' }}" required/>
             </div>
 
             <div class="form-group">
-                <label for="id_description">Description</label>
-                <textarea name="description" id="id_description" class="form-input" placeholder="Enter video description" rows="3">{{ form.description.value|default:'' }}</textarea >
+                <label for="id_description">Tavsif</label>
+                <textarea name="description" id="id_description" class="form-input" placeholder="Video tavsifini kiriting" rows="3">{{ form.description.value|default:'' }}</textarea >
             </div>
 
             <div class="form-group">
-                <label for="id_video_file">Video File</label>
+                <label for="id_video_file">Video fayl</label>
                 <label class="file-input-wrapper" for="id_video_file">
-                    <span id="video-label">Click to select a video file</span>
+                    <span id="video-label">Video fayl tanlash uchun bosing</span>
                 </label>
                 <input type="file" name="video_file" id="id_video_file" accept="video/*" required style="display:none;"/>
-                <span class="help-text">MP4, WebM, MOV, or AVI, Max 100MB</span>
+                <span class="help-text">MP4, WebM, MOV yoki AVI, eng ko'pi 100MB</span>
             </div>
 
             <div class="form-group">
-                <label for="customThumbnail">Thumbnail (optional)</label>
+                <label for="customThumbnail">Muqova rasmi (ixtiyoriy)</label>
                 <label class="file-input-wrapper thumb-wrapper" for="customThumbnail">
                     <img id="thumbPreview">
-                    <span id="thumb-label">Click to select a thumbnail</span>
+                    <span id="thumb-label">Muqova rasm tanlash uchun bosing</span>
                 </label>
                 <input type="file" id="customThumbnail" accept="image/*" style="display:none;"/>
                 <input type="hidden" name="thumbnail_data" id="thumbnailData"/>
-                <span class="help-text">Leave empty to auto-generate from your video</span>
+                <span class="help-text">Bo'sh qoldirsangiz, avtomatik yaratiladi</span>
             </div>
 
-            <button type="submit" class="btn-submit" id="submitBtn">Upload Video</button>
+            <button type="submit" class="btn-submit" id="submitBtn">Video yuklash</button>
         </form>
     </div>
 </div>
@@ -82,7 +82,7 @@ const $ = id => document.getElementById(id);
 
 $("id_video_file").onchange = e => {
     const file = e.target.files[0]
-    $("video-label").textContent = file ? `${file.name}` : "Click to select a video file"
+    $("video-label").textContent = file ? `${file.name}` : "Video fayl tanlash uchun bosing"
 }
 
 $("customThumbnail").onchange = e => {
@@ -106,7 +106,7 @@ $("uploadForm").onsubmit = async e => {
     $("uploadOverlay").classList.add("active")
     $("submitBtn").disabled = true;
     $('errorContainer').innerHTML = ""
-    window.onbeforeunload = () => "Upload in progress"
+    window.onbeforeunload = () => "Yuklash davom etmoqda"
 
     try {
         const res = await fetch("{% url 'videos:video_upload_submit' %}", {
@@ -121,7 +121,7 @@ $("uploadForm").onsubmit = async e => {
         window.onbeforeunload = null;
 
         if (data.success) {
-            $('uploadStatus').textContent = "Upload complete!"
+            $('uploadStatus').textContent = "Yuklash yakunlandi!"
             setTimeout(() => location.href = '{% url "videos:video_list" %}', 500)
         } else {
             throw new Error(data.error)
@@ -130,7 +130,7 @@ $("uploadForm").onsubmit = async e => {
         window.onbeforeunload = null;
         $("uploadOverlay").classList.remove("active")
         $("submitBtn").disabled = false;
-        $('errorContainer').innerHTML = `<ul class="error-list"><li>${err.message || "Upload failed"}</li></ul>`
+        $('errorContainer').innerHTML = `<ul class="error-list"><li>${err.message || "Yuklash muvaffaqiyatsiz tugadi"}</li></ul>`
     }
 }
 
