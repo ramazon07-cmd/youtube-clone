@@ -2,8 +2,16 @@ from django.db import models
 from django.contrib.auth.models import User
 from .imagekit_client import (get_optimized_video_url, get_streaming_url, get_imagekit_client, add_image_watermark)
 
+class Category(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
 class Video(models.Model):
     title = models.CharField(max_length=255)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='videos')
     description = models.TextField(blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='videos')
 

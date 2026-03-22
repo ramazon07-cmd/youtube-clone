@@ -11,12 +11,9 @@ Videolar - UzTube
 
 {% block content %}
 <section class="category-tabs">
-    <button class="category-tab active">Musiqa 🎵</button>
-    <button class="category-tab">Hazil</button>
-    <button class="category-tab">Yangiliklar</button>
-    <button class="category-tab">Sport</button>
-    <button class="category-tab">Ta'lim</button>
-    <button class="category-tab">Madaniyat</button>
+    {% for category in categories %}
+    <button class="category-tab active">{{ category.name }}</button>
+    {% endfor %}
 </section>
 
 <section class="trending-section">

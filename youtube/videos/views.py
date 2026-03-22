@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
-from .models import Video, VideoLike
+from .models import Video, VideoLike, Category
 from .forms import VideoUploadForm
 from .imagekit_client import upload_video, upload_thumbnail, delete_video
 
@@ -10,7 +10,8 @@ from .imagekit_client import upload_video, upload_thumbnail, delete_video
 
 def video_list(request):
     videos = Video.objects.all()
-    return render(request, 'videos/video_list.html', {'videos': videos})
+    categories = Category.objects.all()
+    return render(request, 'videos/video_list.html', {'videos': videos, 'categories': categories})
 
 def video_detail(request, video_id):
     video = get_object_or_404(Video.objects, id=video_id)
