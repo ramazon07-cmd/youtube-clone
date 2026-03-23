@@ -6,72 +6,370 @@
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/videos.css' %}">
 <link rel="stylesheet" href="{% static 'css/upload.css' %}">
+<style>
+  /* ══════════════════════════════════════
+     VIDEO UPLOAD — Premium Upload Page
+  ══════════════════════════════════════ */
+
+  /* ── Upload Overlay ── */
+  .upload-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10,10,11,0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    display: none;
+    place-items: center;
+    z-index: 1000;
+  }
+  .upload-overlay.active { display: grid; }
+
+  .upload-progress-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    text-align: center;
+    padding: 48px;
+  }
+
+  .upload-spinner {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,168,76,0.15);
+    border-top-color: var(--gold);
+    animation: spin 0.9s cubic-bezier(0.6,0.2,0.4,0.8) infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  #uploadStatus {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 300;
+    color: var(--ivory);
+    letter-spacing: 0.04em;
+  }
+  .upload-warning {
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ivory-dim);
+    opacity: 0.35;
+  }
+
+  /* ── Page Layout ── */
+  .upload-page {
+    display: grid;
+    grid-template-columns: 1fr 420px;
+    gap: 0;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 48px 48px 80px;
+    min-height: calc(100vh - 68px);
+    align-items: start;
+  }
+
+  /* Left: intro column */
+  .upload-intro {
+    padding: 48px 48px 0 0;
+    border-right: 1px solid rgba(201,168,76,0.07);
+    position: sticky;
+    top: 100px;
+  }
+  .upload-eyebrow {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .upload-eyebrow::before {
+    content: '';
+    display: block;
+    width: 24px;
+    height: 1px;
+    background: var(--gold-dim);
+  }
+  .upload-intro h1 {
+    font-family: var(--font-display);
+    font-size: 44px;
+    font-weight: 300;
+    line-height: 1.1;
+    color: var(--ivory);
+    letter-spacing: -0.01em;
+    margin-bottom: 20px;
+  }
+  .upload-intro h1 em {
+    font-style: italic;
+    color: var(--gold-light);
+  }
+  .upload-intro p {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--ivory-dim);
+    opacity: 0.55;
+    max-width: 320px;
+  }
+  .upload-rules {
+    margin-top: 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .upload-rule {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 12px;
+    color: var(--ivory-dim);
+    opacity: 0.5;
+    letter-spacing: 0.04em;
+  }
+  .upload-rule::before {
+    content: '';
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--gold-dim);
+    flex-shrink: 0;
+  }
+
+  /* Right: form column */
+  .upload-form-column {
+    padding: 0 0 0 48px;
+  }
+
+  .upload-card {
+    background: var(--noir-2);
+    border: 1px solid rgba(201,168,76,0.1);
+    border-radius: var(--radius-lg);
+    padding: 36px;
+    box-shadow: var(--shadow-card);
+  }
+
+  /* Error list */
+  .error-list {
+    list-style: none;
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .error-list li {
+    padding: 10px 16px;
+    background: rgba(192,57,43,0.08);
+    border-left: 2px solid var(--red);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    color: #e74c3c;
+    letter-spacing: 0.02em;
+  }
+
+  /* Form groups */
+  .upload-form { display: flex; flex-direction: column; gap: 24px; }
+
+  .form-group { display: flex; flex-direction: column; gap: 8px; }
+
+  .form-group label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+  }
+
+  .form-input {
+    background: var(--noir-3);
+    border: 1px solid rgba(201,168,76,0.12);
+    border-radius: var(--radius-sm);
+    color: var(--ivory);
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 300;
+    padding: 13px 16px;
+    outline: none;
+    transition: var(--transition);
+    width: 100%;
+  }
+  .form-input::placeholder { color: var(--ivory-dim); opacity: 0.3; }
+  .form-input:focus {
+    border-color: rgba(201,168,76,0.4);
+    background: var(--noir-4);
+    box-shadow: 0 0 0 3px rgba(201,168,76,0.06);
+  }
+  textarea.form-input { resize: vertical; min-height: 96px; line-height: 1.6; }
+
+  /* File input wrapper */
+  .file-input-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 28px 20px;
+    border: 1px dashed rgba(201,168,76,0.2);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: var(--transition);
+    text-align: center;
+    background: var(--noir-3);
+    color: var(--ivory-dim);
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    position: relative;
+  }
+  .file-input-wrapper:hover {
+    border-color: rgba(201,168,76,0.45);
+    background: var(--noir-4);
+    color: var(--ivory);
+  }
+
+  /* Thumbnail wrapper */
+  .thumb-wrapper {
+    flex-direction: column;
+    aspect-ratio: 16/9;
+    max-height: 180px;
+    overflow: hidden;
+  }
+  .thumb-wrapper img#thumbPreview {
+    display: none;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-md);
+  }
+  .thumb-wrapper img#thumbPreview.visible { display: block; }
+
+  .help-text {
+    font-size: 11px;
+    color: var(--ivory-dim);
+    opacity: 0.35;
+    letter-spacing: 0.05em;
+  }
+
+  /* Submit button */
+  .btn-submit {
+    width: 100%;
+    padding: 15px 32px;
+    background: linear-gradient(135deg, var(--gold-dim) 0%, var(--gold) 50%, var(--gold-dim) 100%);
+    background-size: 200% 100%;
+    border: none;
+    border-radius: var(--radius-sm);
+    color: var(--noir);
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: var(--transition);
+    margin-top: 8px;
+  }
+  .btn-submit:hover {
+    background-position: 100% 0;
+    box-shadow: 0 6px 24px rgba(201,168,76,0.3);
+    transform: translateY(-1px);
+  }
+  .btn-submit:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 900px) {
+    .upload-page { grid-template-columns: 1fr; padding: 24px 20px 60px; }
+    .upload-intro { padding: 0 0 32px; border-right: none; border-bottom: 1px solid rgba(201,168,76,0.07); position: static; }
+    .upload-form-column { padding: 32px 0 0; }
+    .upload-intro h1 { font-size: 32px; }
+  }
+</style>
 {% endblock %}
 
 {% block content %}
+
+<!-- Upload overlay -->
 <div class="upload-overlay" id="uploadOverlay">
-    <div class="upload-progress-container">
-        <div class="upload-spinner"></div>
-        <h2 id="uploadStatus">Video yuklanmoqda...</h2>
-        <p class="upload-warning">Iltimos, sahifani yopmang</p>
-    </div>
+  <div class="upload-progress-container">
+    <div class="upload-spinner"></div>
+    <h2 id="uploadStatus">Video yuklanmoqda...</h2>
+    <p class="upload-warning">Iltimos, sahifani yopmang</p>
+  </div>
 </div>
 
-<div class="upload-container">
-    <div class="upload-card">
-        <h1>Video yuklash</h1>
+<div class="upload-page">
 
-        <form method="post" enctype="multipart/form-data" class="upload-form" id="uploadForm">
-            {% csrf_token %}
-
-            <div id="errorContainer">
-                {% if form.errors %}
-                    <ul class="error-list">
-                        {% for field in form %}
-                            {% for error in field.errors %}
-                                <li>{{error}}</li>
-                            {% endfor %}
-                        {% endfor %}
-                        {% for error in form.non_field_errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-            </div>
-
-            <div class="form-group">
-                <label for="id_title">Sarlavha</label>
-                <input type="text" name="title" id="id_title" class="form-input" placeholder="Video sarlavhasini kiriting" value="{{ form.title.value|default:'' }}" required/>
-            </div>
-
-            <div class="form-group">
-                <label for="id_description">Tavsif</label>
-                <textarea name="description" id="id_description" class="form-input" placeholder="Video tavsifini kiriting" rows="3">{{ form.description.value|default:'' }}</textarea >
-            </div>
-
-            <div class="form-group">
-                <label for="id_video_file">Video fayl</label>
-                <label class="file-input-wrapper" for="id_video_file">
-                    <span id="video-label">Video fayl tanlash uchun bosing</span>
-                </label>
-                <input type="file" name="video_file" id="id_video_file" accept="video/*" required style="display:none;"/>
-                <span class="help-text">MP4, WebM, MOV yoki AVI, eng ko'pi 100MB</span>
-            </div>
-
-            <div class="form-group">
-                <label for="customThumbnail">Muqova rasmi (ixtiyoriy)</label>
-                <label class="file-input-wrapper thumb-wrapper" for="customThumbnail">
-                    <img id="thumbPreview">
-                    <span id="thumb-label">Muqova rasm tanlash uchun bosing</span>
-                </label>
-                <input type="file" id="customThumbnail" accept="image/*" style="display:none;"/>
-                <input type="hidden" name="thumbnail_data" id="thumbnailData"/>
-                <span class="help-text">Bo'sh qoldirsangiz, avtomatik yaratiladi</span>
-            </div>
-
-            <button type="submit" class="btn-submit" id="submitBtn">Video yuklash</button>
-        </form>
+  <!-- LEFT: Intro -->
+  <div class="upload-intro">
+    <div class="upload-eyebrow">Content Studio</div>
+    <h1>Share your<br><em>story</em></h1>
+    <p>Videolaringizni UzTube platformasiga yuklang va millionlab tomoshabinlarga yeting.</p>
+    <div class="upload-rules">
+      <div class="upload-rule">MP4, WebM, MOV yoki AVI formatlar</div>
+      <div class="upload-rule">Maksimal o'lcham 100MB</div>
+      <div class="upload-rule">Muqova rasm ixtiyoriy — avtomatik yaratiladi</div>
+      <div class="upload-rule">Mualliflik huquqini hurmat qiling</div>
     </div>
+  </div>
+
+  <!-- RIGHT: Form -->
+  <div class="upload-form-column">
+    <div class="upload-card">
+      <form method="post" enctype="multipart/form-data" class="upload-form" id="uploadForm">
+        {% csrf_token %}
+
+        <div id="errorContainer">
+          {% if form.errors %}
+          <ul class="error-list">
+            {% for field in form %}{% for error in field.errors %}<li>{{ error }}</li>{% endfor %}{% endfor %}
+            {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+          </ul>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label for="id_title">Sarlavha</label>
+          <input type="text" name="title" id="id_title" class="form-input"
+            placeholder="Video sarlavhasini kiriting"
+            value="{{ form.title.value|default:'' }}" required />
+        </div>
+
+        <div class="form-group">
+          <label for="id_description">Tavsif</label>
+          <textarea name="description" id="id_description" class="form-input"
+            placeholder="Video haqida qisqacha ma'lumot" rows="3">{{ form.description.value|default:'' }}</textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="id_video_file">Video fayl</label>
+          <label class="file-input-wrapper" for="id_video_file">
+            <span id="video-label">Video fayl tanlash uchun bosing</span>
+          </label>
+          <input type="file" name="video_file" id="id_video_file" accept="video/*" required style="display:none;" />
+          <span class="help-text">MP4, WebM, MOV yoki AVI · Maks 100MB</span>
+        </div>
+
+        <div class="form-group">
+          <label for="customThumbnail">Muqova rasmi <span style="opacity:.4;font-weight:300;">(ixtiyoriy)</span></label>
+          <label class="file-input-wrapper thumb-wrapper" for="customThumbnail">
+            <img id="thumbPreview">
+            <span id="thumb-label">Muqova rasm tanlash uchun bosing</span>
+          </label>
+          <input type="file" id="customThumbnail" accept="image/*" style="display:none;" />
+          <input type="hidden" name="thumbnail_data" id="thumbnailData" />
+          <span class="help-text">Bo'sh qoldirsangiz, avtomatik yaratiladi</span>
+        </div>
+
+        <button type="submit" class="btn-submit" id="submitBtn">Video yuklash</button>
+      </form>
+    </div>
+  </div>
 </div>
 
 {% endblock %}
@@ -81,58 +379,54 @@
 const $ = id => document.getElementById(id);
 
 $("id_video_file").onchange = e => {
-    const file = e.target.files[0]
-    $("video-label").textContent = file ? `${file.name}` : "Video fayl tanlash uchun bosing"
-}
+  const file = e.target.files[0];
+  $("video-label").textContent = file ? file.name : "Video fayl tanlash uchun bosing";
+};
 
 $("customThumbnail").onchange = e => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader()
-    reader.onload = ev => {
-        $("thumbPreview").src = ev.target.result
-        $("thumbPreview").classList.add("visible")
-        $("thumb-label").style.display = "none"
-        $("thumbnailData").value = ev.target.result;
-    }
-    reader.readAsDataURL(file)
-}
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    $("thumbPreview").src = ev.target.result;
+    $("thumbPreview").classList.add("visible");
+    $("thumb-label").style.display = "none";
+    $("thumbnailData").value = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+};
 
 $("uploadForm").onsubmit = async e => {
-    e.preventDefault()
+  e.preventDefault();
+  if (!$("id_video_file").files.length || !$("id_title").value.trim()) return;
+  $("uploadOverlay").classList.add("active");
+  $("submitBtn").disabled = true;
+  $("errorContainer").innerHTML = "";
+  window.onbeforeunload = () => "Yuklash davom etmoqda";
 
-    if (!$("id_video_file").files.length || !$("id_title").value.trim()) return;
-
-    $("uploadOverlay").classList.add("active")
-    $("submitBtn").disabled = true;
-    $('errorContainer').innerHTML = ""
-    window.onbeforeunload = () => "Yuklash davom etmoqda"
-
-    try {
-        const res = await fetch("{% url 'videos:video_upload_submit' %}", {
-            method: "POST",
-            headers: {
-                "X-CSRFToken": document.cookie.split(";")
-                    .find(c => c.trim().startsWith("csrftoken="))?.split("=")[1]
-            },
-            body: new FormData(e.target)
-        })
-        const data = await res.json()
-        window.onbeforeunload = null;
-
-        if (data.success) {
-            $('uploadStatus').textContent = "Yuklash yakunlandi!"
-            setTimeout(() => location.href = '{% url "videos:video_list" %}', 500)
-        } else {
-            throw new Error(data.error)
-        }
-    } catch (err) {
-        window.onbeforeunload = null;
-        $("uploadOverlay").classList.remove("active")
-        $("submitBtn").disabled = false;
-        $('errorContainer').innerHTML = `<ul class="error-list"><li>${err.message || "Yuklash muvaffaqiyatsiz tugadi"}</li></ul>`
+  try {
+    const res = await fetch("{% url 'videos:video_upload_submit' %}", {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": document.cookie.split(";")
+          .find(c => c.trim().startsWith("csrftoken="))?.split("=")[1]
+      },
+      body: new FormData(e.target)
+    });
+    const data = await res.json();
+    window.onbeforeunload = null;
+    if (data.success) {
+      $("uploadStatus").textContent = "Yuklash yakunlandi!";
+      setTimeout(() => location.href = '{% url "videos:video_list" %}', 600);
+    } else {
+      throw new Error(data.error);
     }
-}
-
+  } catch (err) {
+    window.onbeforeunload = null;
+    $("uploadOverlay").classList.remove("active");
+    $("submitBtn").disabled = false;
+    $("errorContainer").innerHTML = `<ul class="error-list"><li>${err.message || "Yuklash muvaffaqiyatsiz tugadi"}</li></ul>`;
+  }
+};
 </script>
 {% endblock %}

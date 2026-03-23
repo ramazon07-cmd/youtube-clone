@@ -1,69 +1,640 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}
-Videolar - UzTube
-{% endblock %}
+{% block title %}Videolar - UzTube{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/videos.css' %}">
+<style>
+
+  /* ══════════════════════════════════════════
+     UZTUBE HOMEPAGE — Ultra Luxury Edition
+  ══════════════════════════════════════════ */
+
+  .page-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 70% 50% at 75% 20%, rgba(201,168,76,0.055) 0%, transparent 55%),
+      radial-gradient(ellipse 40% 60% at 5%  80%, rgba(201,168,76,0.03)  0%, transparent 50%),
+      radial-gradient(ellipse 90% 40% at 50% 100%,rgba(15,12,5,0.9)      0%, transparent 70%);
+  }
+  .page-wrap { position: relative; z-index: 1; }
+
+  /* ══ HERO ══ */
+  .hero {
+    position: relative;
+    padding: 80px 64px 72px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: center;
+    min-height: 380px;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 64px; right: 64px;
+    height: 1px;
+    background: linear-gradient(to right, rgba(201,168,76,0.3), rgba(201,168,76,0.08), transparent);
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 64px; right: 64px;
+    height: 1px;
+    background: linear-gradient(to right, rgba(201,168,76,0.15), rgba(201,168,76,0.04), transparent);
+  }
+
+  .hero-copy { display: flex; flex-direction: column; }
+
+  .hero-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+  .hero-kicker-line {
+    display: block; width: 40px; height: 1px;
+    background: linear-gradient(to right, var(--gold), transparent);
+  }
+  .hero-kicker-text {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .hero-headline {
+    font-family: var(--font-display);
+    font-size: clamp(52px, 6vw, 86px);
+    font-weight: 300;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    color: var(--ivory);
+  }
+  .hero-headline .line-italic {
+    display: block;
+    font-style: italic;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(201,168,76,0.55);
+  }
+  .hero-headline .line-normal { display: block; }
+
+  .hero-sub {
+    margin-top: 32px;
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--ivory-dim);
+    opacity: 0.4;
+    letter-spacing: 0.04em;
+    max-width: 300px;
+  }
+
+  /* Right stat column */
+  .hero-stats {
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid rgba(201,168,76,0.1);
+    padding-left: 48px;
+  }
+  .hero-stat-item {
+    padding: 24px 0;
+    border-bottom: 1px solid rgba(201,168,76,0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .hero-stat-item:last-child { border-bottom: none; }
+  .hero-stat-num {
+    font-family: var(--font-display);
+    font-size: 44px;
+    font-weight: 300;
+    color: var(--ivory);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .hero-stat-num sup {
+    font-size: 20px;
+    color: var(--gold-dim);
+    vertical-align: super;
+  }
+  .hero-stat-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ivory-dim);
+    opacity: 0.3;
+  }
+
+  /* ══ CATEGORIES ══ */
+  .category-section {
+    padding: 36px 64px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .category-label {
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ivory-dim);
+    opacity: 0.28;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .category-tabs {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .category-tabs::-webkit-scrollbar { display: none; }
+  .category-tab {
+    flex-shrink: 0;
+    padding: 7px 18px;
+    border-radius: var(--radius-pill);
+    border: 1px solid rgba(201,168,76,0.14);
+    background: transparent;
+    color: rgba(200,191,168,0.4);
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .category-tab:hover { border-color: rgba(201,168,76,0.35); color: var(--ivory); }
+  .category-tab.active { background: rgba(201,168,76,0.08); border-color: var(--gold); color: var(--gold-light); }
+
+  /* ══ TRENDING ══ */
+  .trending-section { padding: 0 64px 56px; }
+  .trending-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+  .trending-heading {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    white-space: nowrap;
+  }
+  .trending-rule {
+    flex: 1; height: 1px;
+    background: linear-gradient(to right, rgba(201,168,76,0.15), transparent);
+  }
+
+  .trending-list {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: rgba(201,168,76,0.07);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid rgba(201,168,76,0.1);
+  }
+  .trending-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 22px;
+    text-decoration: none;
+    background: var(--noir-2);
+    transition: var(--transition);
+    position: relative;
+  }
+  .trending-item::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(to right, var(--gold), transparent);
+    opacity: 0;
+    transition: var(--transition);
+  }
+  .trending-item:hover { background: rgba(201,168,76,0.04); }
+  .trending-item:hover::after { opacity: 1; }
+
+  .trending-rank {
+    font-family: var(--font-display);
+    font-size: 38px;
+    font-weight: 300;
+    color: rgba(201,168,76,0.16);
+    line-height: 1;
+    min-width: 30px;
+    transition: var(--transition);
+  }
+  .trending-item:hover .trending-rank { color: rgba(201,168,76,0.38); }
+
+  .trending-info { flex: 1; min-width: 0; }
+  .trending-title-text {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--ivory);
+    line-height: 1.4;
+    margin-bottom: 5px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .trending-meta {
+    font-size: 10px;
+    color: var(--ivory-dim);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.3;
+  }
+
+  /* ══ VIDEO GRID ══ */
+  .videos-section { padding: 0 64px 88px; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(201,168,76,0.07);
+  }
+  .section-eyebrow {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+  }
+  .section-rule { flex: 1; height: 1px; background: linear-gradient(to right, rgba(201,168,76,0.1), transparent); }
+  .section-count { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(200,191,168,0.2); }
+
+  /* Grid mosaic */
+  .video-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: rgba(201,168,76,0.05);
+    border: 1px solid rgba(201,168,76,0.08);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  /* First card = featured, spans full width */
+  .video-card--featured {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1.8fr 1fr;
+    text-decoration: none;
+    background: var(--noir-2);
+    transition: var(--transition);
+    position: relative;
+  }
+  .video-card--featured::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(to right, transparent 10%, var(--gold) 50%, transparent 90%);
+    opacity: 0;
+    transition: var(--transition);
+  }
+  .video-card--featured:hover { background: var(--noir-3); }
+  .video-card--featured:hover::after { opacity: 1; }
+
+  .video-card--featured .video-thumbnail {
+    aspect-ratio: unset;
+    height: 340px;
+  }
+  .video-card--featured .video-info {
+    padding: 40px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    background: var(--noir-2);
+  }
+  .video-card--featured .video-title {
+    font-size: 28px;
+    -webkit-line-clamp: 3;
+    line-height: 1.25;
+    margin-bottom: 16px;
+  }
+
+  .featured-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid rgba(201,168,76,0.28);
+    padding: 4px 12px;
+    border-radius: var(--radius-pill);
+    margin-bottom: 20px;
+    width: fit-content;
+    background: rgba(201,168,76,0.04);
+  }
+
+  /* Regular cards */
+  .video-card {
+    text-decoration: none;
+    display: block;
+    background: var(--noir-2);
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+  }
+  .video-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+    opacity: 0;
+    transition: var(--transition);
+  }
+  .video-card:hover { background: rgba(201,168,76,0.03); }
+  .video-card:hover::after { opacity: 1; }
+
+  .video-thumbnail {
+    position: relative;
+    aspect-ratio: 16/9;
+    overflow: hidden;
+    background: var(--noir-4);
+  }
+  .video-thumbnail img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.65s cubic-bezier(0.4,0,0.2,1);
+    filter: brightness(0.82) saturate(0.75);
+  }
+  .video-card:hover .video-thumbnail img,
+  .video-card--featured:hover .video-thumbnail img {
+    transform: scale(1.05);
+    filter: brightness(1) saturate(1);
+  }
+
+  /* Dark gradient on thumbnails */
+  .video-thumbnail::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(10,10,11,0.45) 0%, transparent 45%);
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  /* Play button */
+  .play-icon {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .play-circle {
+    width: 46px; height: 46px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,168,76,0.5);
+    background: rgba(10,10,11,0.55);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    color: var(--gold-light);
+    opacity: 0;
+    transform: scale(0.75);
+    transition: var(--transition);
+  }
+  .video-card:hover .play-circle,
+  .video-card--featured:hover .play-circle { opacity: 1; transform: scale(1); }
+
+  .video-info { padding: 20px 22px 24px; }
+
+  .video-title {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--ivory);
+    line-height: 1.3;
+    margin-bottom: 12px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    letter-spacing: 0.01em;
+    transition: color var(--transition);
+  }
+  .video-card:hover .video-title,
+  .video-card--featured:hover .video-title { color: var(--gold-light); }
+
+  .video-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+    color: var(--ivory-dim);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0.38;
+  }
+  .meta-dot {
+    width: 2px; height: 2px;
+    border-radius: 50%;
+    background: var(--gold-dim);
+    opacity: 0.6;
+  }
+
+  /* ── Empty state ── */
+  .empty-state {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 120px 48px; gap: 20px; text-align: center;
+    border: 1px solid rgba(201,168,76,0.07);
+    border-radius: var(--radius-lg);
+    background: var(--noir-2);
+  }
+  .empty-icon { font-size: 52px; filter: grayscale(1); opacity: 0.12; }
+  .empty-state h2 {
+    font-family: var(--font-display); font-size: 32px; font-weight: 300;
+    color: var(--ivory); opacity: 0.3; letter-spacing: 0.02em;
+  }
+  .empty-state p { font-size: 11px; color: var(--ivory-dim); opacity: 0.2; letter-spacing: 0.1em; text-transform: uppercase; }
+
+  /* ── Responsive ── */
+  @media (max-width: 1024px) {
+    .hero { grid-template-columns: 1fr; min-height: auto; padding: 56px 32px; }
+    .hero-stats { border-left: none; padding-left: 0; border-top: 1px solid rgba(201,168,76,0.08); padding-top: 28px; flex-direction: row; flex-wrap: wrap; gap: 28px; }
+    .hero-stat-item { border-bottom: none; padding: 0; }
+    .trending-list { grid-template-columns: repeat(2, 1fr); }
+    .video-grid { grid-template-columns: repeat(2, 1fr); }
+    .video-card--featured { grid-column: span 2; display: block; }
+    .video-card--featured .video-thumbnail { height: auto; aspect-ratio: 16/9; }
+    .video-card--featured .video-info { padding: 20px 22px 24px; }
+    .video-card--featured .video-title { font-size: 20px; }
+  }
+  @media (max-width: 768px) {
+    .hero, .category-section, .trending-section, .videos-section { padding-left: 20px; padding-right: 20px; }
+    .hero::before, .hero::after { left: 20px; right: 20px; }
+    .hero-headline { font-size: 48px; }
+    .trending-list { grid-template-columns: 1fr; }
+    .video-grid { grid-template-columns: 1fr; }
+    .video-card--featured { grid-column: span 1; }
+  }
+</style>
 {% endblock %}
 
 {% block content %}
-<section class="category-tabs">
-    {% for category in categories %}
-    <button class="category-tab active">{{ category.name }}</button>
-    {% endfor %}
-</section>
+<div class="page-bg"></div>
+<div class="page-wrap">
 
-<section class="trending-section">
-    <h2 data-i18n="trendingUz">Trending in Uzbekistan 🇺🇿</h2>
-    <div class="trending-list">
-        {% for video in videos|slice:":4" %}
-            <a href="{% url 'videos:video_detail' video.id %}" class="trending-item">
-                <span class="trending-rank">{{ forloop.counter }}</span>
-                <div>
-                    <p class="trending-title">{{ video.title }}</p>
-                    <p class="trending-meta">{{ video.views }} ko'rish</p>
-                </div>
-            </a>
-        {% empty %}
-            <p class="video-meta" data-i18n="noTrending">Hozircha trend videolar mavjud emas.</p>
-        {% endfor %}
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-copy">
+      <div class="hero-kicker">
+        <span class="hero-kicker-line"></span>
+        <span class="hero-kicker-text">O'zbekiston video platformasi</span>
+      </div>
+      <h1 class="hero-headline">
+        <span class="line-normal">Discover</span>
+        <span class="line-italic">extraordinary</span>
+        <span class="line-normal">content</span>
+      </h1>
+      <p class="hero-sub">Musiqa, yangiliklar, sport va ta'lim videolarini UzTube orqali tomosha qiling.</p>
     </div>
-</section>
-{% if videos %}
-<div class="video-grid">
-    {% for video in videos %}
-        <a href="{% url 'videos:video_detail' video.id %}" class="video-card">
-            <div class="video-thumbnail">
-                <img src="{{ video.display_thumbnail_url }}" alt="{{ video.title }}" loading="lazy">
-                <span class="play-icon">▶</span>
+    <div class="hero-stats">
+      <div class="hero-stat-item">
+        <div class="hero-stat-num">{{ videos|length }}<sup>+</sup></div>
+        <div class="hero-stat-label">Videolar</div>
+      </div>
+      <div class="hero-stat-item">
+        <div class="hero-stat-num">{{ categories|length }}<sup>+</sup></div>
+        <div class="hero-stat-label">Kategoriyalar</div>
+      </div>
+      <div class="hero-stat-item">
+        <div class="hero-stat-num">UZ</div>
+        <div class="hero-stat-label">Mahalliy platforma 🇺🇿</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CATEGORIES -->
+  <div class="category-section">
+    <span class="category-label">Filter</span>
+    <div class="category-tabs">
+      {% for category in categories %}
+      <button class="category-tab active">{{ category.name }}</button>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- TRENDING -->
+  <section class="trending-section">
+    <div class="trending-header">
+      <span class="trending-heading">Trending in Uzbekistan 🇺🇿</span>
+      <div class="trending-rule"></div>
+    </div>
+    <div class="trending-list">
+      {% for video in videos|slice:":4" %}
+      <a href="{% url 'videos:video_detail' video.id %}" class="trending-item">
+        <span class="trending-rank">{{ forloop.counter }}</span>
+        <div class="trending-info">
+          <p class="trending-title-text">{{ video.title }}</p>
+          <p class="trending-meta">{{ video.views }} ko'rish</p>
+        </div>
+      </a>
+      {% empty %}
+      <p class="trending-meta" style="padding:24px;grid-column:span 4;" data-i18n="noTrending">Hozircha trend videolar mavjud emas.</p>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- VIDEOS -->
+  <section class="videos-section">
+    <div class="section-header">
+      <span class="section-eyebrow">Barcha videolar</span>
+      <div class="section-rule"></div>
+      {% if videos %}<span class="section-count">{{ videos|length }} ta video</span>{% endif %}
+    </div>
+
+    {% if videos %}
+    <div class="video-grid">
+      {% for video in videos %}
+        {% if forloop.first %}
+        <a href="{% url 'videos:video_detail' video.id %}" class="video-card--featured">
+          <div class="video-thumbnail">
+            <img src="{{ video.display_thumbnail_url }}" alt="{{ video.title }}" loading="lazy">
+            <div class="play-icon"><div class="play-circle">▶</div></div>
+          </div>
+          <div class="video-info">
+            <div class="featured-tag">✦ Featured</div>
+            <h3 class="video-title">{{ video.title }}</h3>
+            <div class="video-meta">
+              <span>{{ video.user.username }}</span>
+              <span class="meta-dot"></span>
+              <span>{{ video.views }} ko'rish</span>
             </div>
-            <div class="video-info">
-                <h3 class="video-title">{{ video.title }}</h3>
-                <p class="video-meta">{{ video.user.username }} | {{ video.views }} ko'rish</p>
-            </div>
+          </div>
         </a>
-    {% endfor %}
+        {% else %}
+        <a href="{% url 'videos:video_detail' video.id %}" class="video-card">
+          <div class="video-thumbnail">
+            <img src="{{ video.display_thumbnail_url }}" alt="{{ video.title }}" loading="lazy">
+            <div class="play-icon"><div class="play-circle">▶</div></div>
+          </div>
+          <div class="video-info">
+            <h3 class="video-title">{{ video.title }}</h3>
+            <div class="video-meta">
+              <span>{{ video.user.username }}</span>
+              <span class="meta-dot"></span>
+              <span>{{ video.views }} ko'rish</span>
+            </div>
+          </div>
+        </a>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="empty-state">
+      <span class="empty-icon">🎬</span>
+      <h2>Hozircha video yo'q</h2>
+      <p>Birinchi bo'lib video yuklang</p>
+    </div>
+    {% endif %}
+  </section>
+
 </div>
-{% endif %}
 {% endblock %}
 
 {% block extra_js %}
 <script>
-Object.assign(i18n.uz, {
-    trendingUz: "Trending in Uzbekistan 🇺🇿",
-    noTrending: "Hozircha trend videolar mavjud emas."
-});
-Object.assign(i18n.ru, {
-    trendingUz: "В тренде в Узбекистане 🇺🇿",
-    noTrending: "Пока нет трендовых видео."
-});
-Object.assign(i18n.en, {
-    trendingUz: "Trending in Uzbekistan 🇺🇿",
-    noTrending: "No trending videos yet."
-});
+Object.assign(i18n.uz, { noTrending:"Hozircha trend videolar mavjud emas." });
+Object.assign(i18n.ru, { noTrending:"Пока нет трендовых видео." });
+Object.assign(i18n.en, { noTrending:"No trending videos yet." });
 applyLanguage(localStorage.getItem("uztube_lang") || "uz");
+
+/* Staggered entrance */
+const all = document.querySelectorAll('.video-card, .video-card--featured, .trending-item, .hero-stat-item');
+all.forEach(el => { el.style.cssText += 'opacity:0;transform:translateY(20px);transition:opacity 0.55s ease,transform 0.55s ease'; });
+setTimeout(() => {
+  all.forEach((el, i) => setTimeout(() => { el.style.opacity='1'; el.style.transform='translateY(0)'; }, i * 70));
+}, 100);
+
+/* Hero headline animate in */
+document.querySelectorAll('.hero-headline span').forEach((el, i) => {
+  el.style.cssText += `opacity:0;transform:translateY(12px);transition:opacity 0.6s ease ${i*0.13}s,transform 0.6s ease ${i*0.13}s`;
+  setTimeout(() => { el.style.opacity='1'; el.style.transform='translateY(0)'; }, 60 + i*130);
+});
 </script>
 {% endblock %}

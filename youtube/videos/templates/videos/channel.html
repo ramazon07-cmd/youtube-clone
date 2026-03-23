@@ -1,39 +1,403 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}
-{{ channel_name }} - UzTube
-{% endblock %}
+{% block title %}{{ channel_name }} - UzTube{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/videos.css' %}">
+<style>
+  /* ══════════════════════════════════════
+     CHANNEL PAGE — Premium Profile
+  ══════════════════════════════════════ */
+
+  /* ── Hero Banner ── */
+  .channel-hero {
+    position: relative;
+    padding: 64px 48px 0;
+    overflow: hidden;
+  }
+  .channel-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 50% 120% at 20% 50%, rgba(201,168,76,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 30% 80% at 90% 20%, rgba(201,168,76,0.04) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  /* Decorative rule */
+  .channel-hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 48px;
+    right: 48px;
+    height: 1px;
+    background: linear-gradient(to right, rgba(201,168,76,0.25), rgba(201,168,76,0.05), transparent);
+  }
+
+  .channel-hero-inner {
+    display: flex;
+    align-items: flex-end;
+    gap: 32px;
+    padding-bottom: 40px;
+    position: relative;
+  }
+
+  /* ── Avatar ── */
+  .channel-header-avatar {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--noir-4) 0%, var(--noir-5) 100%);
+    border: 1px solid rgba(201,168,76,0.25);
+    box-shadow: 0 0 0 4px rgba(201,168,76,0.06), var(--shadow-card);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 40px;
+    font-weight: 400;
+    color: var(--gold);
+    flex-shrink: 0;
+    position: relative;
+    bottom: 4px;
+    letter-spacing: 0;
+  }
+
+  /* ── Channel Meta ── */
+  .channel-meta {
+    flex: 1;
+    padding-bottom: 4px;
+  }
+  .channel-eyebrow {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .channel-eyebrow::before {
+    content: '';
+    display: block;
+    width: 20px;
+    height: 1px;
+    background: var(--gold-dim);
+  }
+
+  .channel-name-heading {
+    font-family: var(--font-display);
+    font-size: clamp(32px, 5vw, 56px);
+    font-weight: 300;
+    line-height: 1.05;
+    color: var(--ivory);
+    letter-spacing: -0.01em;
+    margin-bottom: 0;
+  }
+
+  /* ── Stats row ── */
+  .channel-stats {
+    display: flex;
+    gap: 32px;
+    padding: 28px 48px;
+    border-bottom: 1px solid rgba(201,168,76,0.07);
+  }
+  .channel-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .channel-stat-value {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 400;
+    color: var(--ivory);
+    letter-spacing: 0.02em;
+    line-height: 1;
+  }
+  .channel-stat-label {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ivory-dim);
+    opacity: 0.4;
+  }
+  .channel-stat-divider {
+    width: 1px;
+    background: rgba(201,168,76,0.1);
+    align-self: stretch;
+    margin: 4px 0;
+  }
+
+  /* ── Section header ── */
+  .videos-section {
+    padding: 40px 48px 64px;
+  }
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .section-title {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--ivory);
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+  }
+  .section-rule {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, rgba(201,168,76,0.18), transparent);
+  }
+  .section-count {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    opacity: 0.6;
+    white-space: nowrap;
+  }
+
+  /* ── Video Grid (matches video_list) ── */
+  .video-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+  }
+
+  .video-card {
+    text-decoration: none;
+    display: block;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: var(--noir-2);
+    border: 1px solid rgba(255,255,255,0.04);
+    transition: var(--transition);
+    position: relative;
+  }
+  .video-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-md);
+    box-shadow: inset 0 0 0 1px rgba(201,168,76,0);
+    transition: var(--transition);
+    pointer-events: none;
+  }
+  .video-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(201,168,76,0.18);
+    box-shadow: var(--shadow-card);
+  }
+  .video-card:hover::after {
+    box-shadow: inset 0 0 0 1px rgba(201,168,76,0.15);
+  }
+
+  .video-thumbnail {
+    position: relative;
+    aspect-ratio: 16/9;
+    overflow: hidden;
+    background: var(--noir-4);
+  }
+  .video-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform var(--transition-slow);
+    filter: brightness(0.9) saturate(0.85);
+  }
+  .video-card:hover .video-thumbnail img {
+    transform: scale(1.04);
+    filter: brightness(1) saturate(1);
+  }
+  .play-icon {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    opacity: 0;
+    background: rgba(10,10,11,0.45);
+    backdrop-filter: blur(4px);
+    transition: var(--transition);
+    color: var(--ivory);
+  }
+  .video-card:hover .play-icon { opacity: 1; }
+  .video-thumbnail::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+    opacity: 0;
+    transition: var(--transition);
+  }
+  .video-card:hover .video-thumbnail::after { opacity: 1; }
+
+  .video-info { padding: 16px 18px 18px; }
+  .video-title {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 400;
+    color: var(--ivory);
+    line-height: 1.35;
+    margin-bottom: 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    letter-spacing: 0.01em;
+  }
+  .video-meta {
+    font-size: 11px;
+    color: var(--ivory-dim);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    opacity: 0.5;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .video-meta::before {
+    content: '';
+    display: block;
+    width: 16px;
+    height: 1px;
+    background: var(--gold-dim);
+    opacity: 0.5;
+  }
+
+  /* ── Empty State ── */
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 96px 48px;
+    gap: 16px;
+    text-align: center;
+  }
+  .empty-icon {
+    font-size: 48px;
+    filter: grayscale(1);
+    opacity: 0.2;
+  }
+  .empty-state h2 {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 300;
+    color: var(--ivory);
+    opacity: 0.45;
+  }
+  .empty-state p {
+    font-size: 13px;
+    color: var(--ivory-dim);
+    opacity: 0.3;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .channel-hero, .channel-stats, .videos-section { padding-left: 20px; padding-right: 20px; }
+    .channel-hero::after { left: 20px; right: 20px; }
+    .channel-hero-inner { flex-direction: column; align-items: flex-start; gap: 20px; }
+    .channel-header-avatar { width: 72px; height: 72px; font-size: 30px; }
+    .channel-stats { gap: 20px; flex-wrap: wrap; }
+    .video-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
+  }
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="channel-header">
+
+<!-- Channel Hero -->
+<div class="channel-hero">
+  <div class="channel-hero-inner">
     <div class="channel-header-avatar">{{ channel_name|slice:":1" }}</div>
-    <h1>{{ channel_name }}</h1>
+    <div class="channel-meta">
+      <div class="channel-eyebrow">Channel</div>
+      <h1 class="channel-name-heading">{{ channel_name }}</h1>
+    </div>
+  </div>
 </div>
-{% if videos %}
-<div class="video-grid">
+
+<!-- Stats Bar -->
+<div class="channel-stats">
+  <div class="channel-stat">
+    <span class="channel-stat-value">{{ videos|length }}</span>
+    <span class="channel-stat-label">Videolar</span>
+  </div>
+  <div class="channel-stat-divider"></div>
+  <div class="channel-stat">
+    <span class="channel-stat-value">
+      {% with total=0 %}
+        {% for video in videos %}{{ video.views }}{% if not forloop.last %}+{% endif %}{% endfor %}
+      {% endwith %}
+    </span>
+    <span class="channel-stat-label">Umumiy ko'rishlar</span>
+  </div>
+</div>
+
+<!-- Videos Section -->
+<section class="videos-section">
+  <div class="section-header">
+    <h2 class="section-title">Videolar</h2>
+    <div class="section-rule"></div>
+    {% if videos %}
+    <span class="section-count">{{ videos|length }} ta</span>
+    {% endif %}
+  </div>
+
+  {% if videos %}
+  <div class="video-grid">
     {% for video in videos %}
-        <a href="{% url 'videos:video_detail' video.id %}" class="video-card">
-            <div class="video-thumbnail">
-                <img src="{{ video.display_thumbnail_url }}" alt="{{ video.title }}" loading="lazy">
-                <span class="play-icon">▶</span>
-            </div>
-            <div class="video-info">
-                <h3 class="video-title">{{ video.title }}</h3>
-                <p class="video-meta">{{ video.views }} ko'rish</p>
-            </div>
-        </a>
+    <a href="{% url 'videos:video_detail' video.id %}" class="video-card">
+      <div class="video-thumbnail">
+        <img src="{{ video.display_thumbnail_url }}" alt="{{ video.title }}" loading="lazy">
+        <span class="play-icon">▶</span>
+      </div>
+      <div class="video-info">
+        <h3 class="video-title">{{ video.title }}</h3>
+        <p class="video-meta">{{ video.views }} ko'rish</p>
+      </div>
+    </a>
     {% endfor %}
-</div>
-{% else %}
-<div class="empty-state">
+  </div>
+
+  {% else %}
+  <div class="empty-state">
     <span class="empty-icon">🎬</span>
     <h2>Hozircha video yo'q</h2>
     <p>Bu kanal hali video yuklamagan.</p>
-</div>
-{% endif %}
+  </div>
+  {% endif %}
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+/* Staggered entrance */
+setTimeout(() => {
+  document.querySelectorAll('.video-card').forEach((c, i) => {
+    c.style.opacity = '0';
+    c.style.transform = 'translateY(18px)';
+    c.style.transition = 'opacity 0.45s ease, transform 0.45s ease';
+    setTimeout(() => {
+      c.style.opacity = '1';
+      c.style.transform = 'translateY(0)';
+    }, 80 + i * 65);
+  });
+}, 50);
+</script>
 {% endblock %}
