@@ -1,432 +1,780 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block title %}Video yuklash - UzTube{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/videos.css' %}">
 <link rel="stylesheet" href="{% static 'css/upload.css' %}">
 <style>
-  /* ══════════════════════════════════════
-     VIDEO UPLOAD — Premium Upload Page
-  ══════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════
+   VIDEO UPLOAD — Ultra Premium Studio Interface
+   🇺🇿 Navy · Cerulean · Emerald · Crimson
+═══════════════════════════════════════════════════ */
 
-  /* ── Upload Overlay ── */
-  .upload-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(10,10,11,0.92);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    display: none;
-    place-items: center;
-    z-index: 1000;
-  }
-  .upload-overlay.active { display: grid; }
+/* Page ambient */
+.upload-page-bg {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 55% 60% at 10% 50%, rgba(23,136,192,0.07) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 45% at 90% 20%, rgba(15,153,87,0.05)  0%, transparent 50%),
+    radial-gradient(ellipse 60% 40% at 60% 100%,rgba(4,9,15,0.9)       0%, transparent 70%);
+}
 
-  .upload-progress-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 24px;
-    text-align: center;
-    padding: 48px;
-  }
+/* ══ PAGE SHELL ══ */
+.upload-shell {
+  position: relative; z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr 520px;
+  min-height: calc(100vh - 68px);
+}
 
-  .upload-spinner {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    border: 1px solid rgba(201,168,76,0.15);
-    border-top-color: var(--gold);
-    animation: spin 0.9s cubic-bezier(0.6,0.2,0.4,0.8) infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
+/* ══════════════════════
+   LEFT PANEL — Intro
+══════════════════════ */
+.intro-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 80px 72px 80px 64px;
+  border-right: 1px solid rgba(23,136,192,0.09);
+  position: sticky;
+  top: 68px;
+  height: calc(100vh - 68px);
+  overflow: hidden;
+}
 
-  #uploadStatus {
-    font-family: var(--font-display);
-    font-size: 24px;
-    font-weight: 300;
-    color: var(--ivory);
-    letter-spacing: 0.04em;
-  }
-  .upload-warning {
-    font-size: 12px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--ivory-dim);
-    opacity: 0.35;
-  }
+/* Big decorative flag stripe — vertical */
+.intro-panel::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(to bottom,
+    var(--blue)    0%,   var(--blue)    33%,
+    var(--crimson) 33%,  var(--crimson) 36%,
+    var(--green)   36%,  var(--green)   70%,
+    transparent    100%
+  );
+  opacity: 0.45;
+}
 
-  /* ── Page Layout ── */
-  .upload-page {
-    display: grid;
-    grid-template-columns: 1fr 420px;
-    gap: 0;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 48px 48px 80px;
-    min-height: calc(100vh - 68px);
-    align-items: start;
-  }
+/* Background watermark number */
+.intro-panel::after {
+  content: '🎬';
+  position: absolute;
+  right: -20px; bottom: 40px;
+  font-size: 240px;
+  opacity: 0.025;
+  pointer-events: none;
+  user-select: none;
+  filter: blur(1px);
+  transform: rotate(-8deg);
+}
 
-  /* Left: intro column */
-  .upload-intro {
-    padding: 48px 48px 0 0;
-    border-right: 1px solid rgba(201,168,76,0.07);
-    position: sticky;
-    top: 100px;
-  }
-  .upload-eyebrow {
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--gold-dim);
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .upload-eyebrow::before {
-    content: '';
-    display: block;
-    width: 24px;
-    height: 1px;
-    background: var(--gold-dim);
-  }
-  .upload-intro h1 {
-    font-family: var(--font-display);
-    font-size: 44px;
-    font-weight: 300;
-    line-height: 1.1;
-    color: var(--ivory);
-    letter-spacing: -0.01em;
-    margin-bottom: 20px;
-  }
-  .upload-intro h1 em {
-    font-style: italic;
-    color: var(--gold-light);
-  }
-  .upload-intro p {
-    font-size: 14px;
-    line-height: 1.7;
-    color: var(--ivory-dim);
-    opacity: 0.55;
-    max-width: 320px;
-  }
-  .upload-rules {
-    margin-top: 36px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-  .upload-rule {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 12px;
-    color: var(--ivory-dim);
-    opacity: 0.5;
-    letter-spacing: 0.04em;
-  }
-  .upload-rule::before {
-    content: '';
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background: var(--gold-dim);
-    flex-shrink: 0;
-  }
+.intro-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 32px;
+}
+.intro-eyebrow-line {
+  display: block; width: 36px; height: 1px;
+  background: linear-gradient(to right, var(--blue), var(--green));
+}
+.intro-eyebrow-text {
+  font-size: 10px; font-weight: 500; letter-spacing: 0.3em;
+  text-transform: uppercase; color: var(--blue);
+}
 
-  /* Right: form column */
-  .upload-form-column {
-    padding: 0 0 0 48px;
-  }
+.intro-headline {
+  font-family: var(--font-display);
+  font-size: clamp(46px, 5vw, 72px);
+  font-weight: 300;
+  line-height: 1;
+  color: var(--ivory);
+  letter-spacing: -0.02em;
+  margin-bottom: 28px;
+}
+.intro-headline em {
+  display: block;
+  font-style: italic;
+  font-weight: 300;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(42,181,232,0.7);
+  margin-top: 4px;
+}
+.intro-headline strong {
+  display: block;
+  font-style: italic;
+  font-weight: 300;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(23,204,116,0.5);
+}
 
-  .upload-card {
-    background: var(--noir-2);
-    border: 1px solid rgba(201,168,76,0.1);
-    border-radius: var(--radius-lg);
-    padding: 36px;
-    box-shadow: var(--shadow-card);
-  }
+.intro-desc {
+  font-size: 14px; line-height: 1.8;
+  color: var(--ivory-dim); opacity: 0.5;
+  letter-spacing: 0.03em;
+  max-width: 340px;
+  margin-bottom: 48px;
+}
 
-  /* Error list */
-  .error-list {
-    list-style: none;
-    margin-bottom: 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .error-list li {
-    padding: 10px 16px;
-    background: rgba(192,57,43,0.08);
-    border-left: 2px solid var(--red);
-    border-radius: var(--radius-sm);
-    font-size: 13px;
-    color: #e74c3c;
-    letter-spacing: 0.02em;
-  }
+/* Rules list */
+.rules-list {
+  display: flex; flex-direction: column; gap: 0;
+  border: 1px solid rgba(23,136,192,0.1);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.rule-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(23,136,192,0.06);
+  transition: var(--t);
+}
+.rule-item:last-child { border-bottom: none; }
+.rule-item:hover { background: rgba(23,136,192,0.03); }
 
-  /* Form groups */
-  .upload-form { display: flex; flex-direction: column; gap: 24px; }
+.rule-dot {
+  width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+}
+.rule-item:nth-child(1) .rule-dot { background: var(--blue); box-shadow: 0 0 6px rgba(23,136,192,0.5); }
+.rule-item:nth-child(2) .rule-dot { background: var(--crimson); box-shadow: 0 0 6px rgba(200,16,46,0.5); }
+.rule-item:nth-child(3) .rule-dot { background: var(--green); box-shadow: 0 0 6px rgba(15,153,87,0.5); }
+.rule-item:nth-child(4) .rule-dot { background: var(--blue-dim); box-shadow: 0 0 6px rgba(13,95,138,0.5); }
 
-  .form-group { display: flex; flex-direction: column; gap: 8px; }
+.rule-text {
+  font-size: 13px; color: var(--ivory-dim); opacity: 0.55;
+  letter-spacing: 0.03em; line-height: 1.4;
+}
 
-  .form-group label {
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--gold-dim);
-  }
+/* ══════════════════════
+   RIGHT PANEL — Form
+══════════════════════ */
+.form-panel {
+  background: var(--bg-2);
+  border-left: 1px solid rgba(23,136,192,0.08);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
 
-  .form-input {
-    background: var(--noir-3);
-    border: 1px solid rgba(201,168,76,0.12);
-    border-radius: var(--radius-sm);
-    color: var(--ivory);
-    font-family: var(--font-body);
-    font-size: 14px;
-    font-weight: 300;
-    padding: 13px 16px;
-    outline: none;
-    transition: var(--transition);
-    width: 100%;
-  }
-  .form-input::placeholder { color: var(--ivory-dim); opacity: 0.3; }
-  .form-input:focus {
-    border-color: rgba(201,168,76,0.4);
-    background: var(--noir-4);
-    box-shadow: 0 0 0 3px rgba(201,168,76,0.06);
-  }
-  textarea.form-input { resize: vertical; min-height: 96px; line-height: 1.6; }
+/* Form panel header */
+.form-panel-header {
+  padding: 36px 44px 0;
+  border-bottom: 1px solid rgba(23,136,192,0.08);
+  padding-bottom: 28px;
+  position: relative;
+}
+/* Flag stripe at very top of form panel */
+.form-panel-header::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(to right,
+    var(--blue)    0%,   var(--blue)    33%,
+    var(--crimson) 33%,  var(--crimson) 35%,
+    var(--green)   35%,  var(--green)   67%,
+    transparent    100%
+  );
+  opacity: 0.6;
+}
 
-  /* File input wrapper */
-  .file-input-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    padding: 28px 20px;
-    border: 1px dashed rgba(201,168,76,0.2);
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    transition: var(--transition);
-    text-align: center;
-    background: var(--noir-3);
-    color: var(--ivory-dim);
-    font-size: 13px;
-    letter-spacing: 0.05em;
-    position: relative;
-  }
-  .file-input-wrapper:hover {
-    border-color: rgba(201,168,76,0.45);
-    background: var(--noir-4);
-    color: var(--ivory);
-  }
+.form-panel-title {
+  font-family: var(--font-display);
+  font-size: 22px; font-weight: 400;
+  color: var(--ivory); letter-spacing: 0.02em;
+  margin-bottom: 6px;
+}
+.form-panel-sub {
+  font-size: 11px; color: var(--ivory-dim); opacity: 0.35;
+  letter-spacing: 0.08em; text-transform: uppercase;
+}
 
-  /* Thumbnail wrapper */
-  .thumb-wrapper {
-    flex-direction: column;
-    aspect-ratio: 16/9;
-    max-height: 180px;
-    overflow: hidden;
-  }
-  .thumb-wrapper img#thumbPreview {
-    display: none;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    position: absolute;
-    inset: 0;
-    border-radius: var(--radius-md);
-  }
-  .thumb-wrapper img#thumbPreview.visible { display: block; }
+/* Error container */
+.error-list {
+  list-style: none;
+  display: flex; flex-direction: column; gap: 6px;
+  padding: 20px 44px 0;
+}
+.error-list li {
+  padding: 12px 16px;
+  background: rgba(200,16,46,0.07);
+  border-left: 2px solid var(--crimson);
+  border-radius: var(--radius-sm);
+  font-size: 13px; color: #f05070; letter-spacing: 0.02em;
+}
 
-  .help-text {
-    font-size: 11px;
-    color: var(--ivory-dim);
-    opacity: 0.35;
-    letter-spacing: 0.05em;
-  }
+/* Form body */
+.form-body {
+  padding: 32px 44px 48px;
+  display: flex; flex-direction: column; gap: 28px;
+  flex: 1;
+}
 
-  /* Submit button */
-  .btn-submit {
-    width: 100%;
-    padding: 15px 32px;
-    background: linear-gradient(135deg, var(--gold-dim) 0%, var(--gold) 50%, var(--gold-dim) 100%);
-    background-size: 200% 100%;
-    border: none;
-    border-radius: var(--radius-sm);
-    color: var(--noir);
-    font-family: var(--font-body);
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: var(--transition);
-    margin-top: 8px;
-  }
-  .btn-submit:hover {
-    background-position: 100% 0;
-    box-shadow: 0 6px 24px rgba(201,168,76,0.3);
-    transform: translateY(-1px);
-  }
-  .btn-submit:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-    transform: none;
-  }
+/* ── Field groups ── */
+.field-group {
+  display: flex; flex-direction: column; gap: 0;
+  border: 1px solid rgba(23,136,192,0.12);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--bg-3);
+  transition: var(--t);
+}
+.field-group:focus-within {
+  border-color: rgba(23,136,192,0.4);
+  box-shadow: 0 0 0 3px rgba(23,136,192,0.06), 0 4px 24px rgba(0,0,0,0.3);
+}
 
-  /* ── Responsive ── */
-  @media (max-width: 900px) {
-    .upload-page { grid-template-columns: 1fr; padding: 24px 20px 60px; }
-    .upload-intro { padding: 0 0 32px; border-right: none; border-bottom: 1px solid rgba(201,168,76,0.07); position: static; }
-    .upload-form-column { padding: 32px 0 0; }
-    .upload-intro h1 { font-size: 32px; }
-  }
+.field-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px 0;
+}
+.field-label-text {
+  font-size: 9px; font-weight: 500; letter-spacing: 0.26em;
+  text-transform: uppercase; color: var(--blue-dim);
+}
+.field-label-hint {
+  font-size: 9px; letter-spacing: 0.1em;
+  color: var(--ivory-dim); opacity: 0.28; text-transform: uppercase;
+}
+
+.form-input {
+  background: transparent;
+  border: none; outline: none;
+  color: var(--ivory); font-family: var(--font-body);
+  font-size: 14px; font-weight: 300;
+  padding: 10px 18px 16px;
+  width: 100%; line-height: 1.5;
+  caret-color: var(--blue-light);
+}
+.form-input::placeholder { color: var(--ivory-dim); opacity: 0.25; }
+textarea.form-input { resize: none; min-height: 90px; }
+
+/* Character counter line (decorative) */
+.field-footer {
+  height: 2px;
+  background: rgba(23,136,192,0.06);
+  position: relative; overflow: hidden;
+}
+.field-footer::after {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 0%; background: linear-gradient(to right, var(--blue), var(--green));
+  transition: width 0.4s ease;
+}
+.field-group:focus-within .field-footer::after { width: 100%; }
+
+/* ── File drop zones ── */
+.drop-zone {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 36px 24px;
+  border: 1px dashed rgba(23,136,192,0.2);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--t);
+  background: var(--bg-3);
+  overflow: hidden;
+  text-align: center;
+}
+.drop-zone::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 100%, rgba(23,136,192,0.07) 0%, transparent 70%);
+  opacity: 0; transition: var(--t); pointer-events: none;
+}
+.drop-zone:hover {
+  border-color: rgba(23,136,192,0.45);
+  background: var(--bg-4);
+}
+.drop-zone:hover::before { opacity: 1; }
+.drop-zone.dragover {
+  border-color: var(--blue);
+  background: rgba(23,136,192,0.05);
+  box-shadow: 0 0 0 3px rgba(23,136,192,0.08);
+}
+
+.drop-icon {
+  width: 48px; height: 48px; border-radius: 50%;
+  border: 1px solid rgba(23,136,192,0.25);
+  background: rgba(23,136,192,0.06);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  transition: var(--t);
+}
+.drop-zone:hover .drop-icon {
+  border-color: rgba(23,136,192,0.5);
+  background: rgba(23,136,192,0.12);
+  transform: translateY(-2px);
+}
+
+.drop-label {
+  font-size: 13px; color: var(--ivory-dim); letter-spacing: 0.04em;
+  opacity: 0.65; line-height: 1.5;
+  transition: var(--t);
+}
+.drop-label span { color: var(--blue-light); text-decoration: underline; text-underline-offset: 3px; }
+.drop-zone:hover .drop-label { opacity: 0.9; }
+
+.drop-hint {
+  font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--ivory-dim); opacity: 0.25;
+}
+
+/* File selected state */
+.drop-zone.has-file {
+  border-color: rgba(15,153,87,0.35);
+  background: rgba(15,153,87,0.03);
+}
+.drop-zone.has-file .drop-icon {
+  border-color: rgba(15,153,87,0.5);
+  background: rgba(15,153,87,0.1);
+  font-size: 22px;
+}
+.drop-zone.has-file .drop-label { color: var(--green-light); opacity: 0.85; }
+
+/* Thumbnail preview zone */
+.thumb-drop-zone {
+  aspect-ratio: 16/9;
+  max-height: 200px;
+  padding: 0;
+  overflow: hidden;
+}
+.thumb-drop-zone .drop-content {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 12px; width: 100%; height: 100%; padding: 28px;
+}
+.thumb-preview-img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: none; border-radius: var(--radius-md);
+}
+.thumb-preview-img.visible { display: block; }
+.thumb-overlay {
+  position: absolute; inset: 0;
+  background: rgba(4,9,15,0.5);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: var(--t);
+  border-radius: var(--radius-md);
+}
+.thumb-drop-zone:hover .thumb-overlay { opacity: 1; }
+.thumb-overlay-text {
+  font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--white); font-weight: 500;
+}
+
+/* Field divider label */
+.section-divider {
+  display: flex; align-items: center; gap: 16px;
+}
+.section-divider-text {
+  font-size: 9px; font-weight: 500; letter-spacing: 0.28em;
+  text-transform: uppercase; color: var(--blue-dim); white-space: nowrap;
+}
+.section-divider-line {
+  flex: 1; height: 1px;
+  background: linear-gradient(to right, rgba(23,136,192,0.18), transparent);
+}
+
+/* ── Submit button ── */
+.submit-wrap { margin-top: 4px; }
+
+.btn-submit {
+  width: 100%;
+  padding: 18px 32px;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 12px; font-weight: 500;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--white);
+  position: relative;
+  overflow: hidden;
+  transition: var(--t);
+
+  /* UZ flag gradient */
+  background: linear-gradient(135deg,
+    var(--blue-dim) 0%,
+    var(--blue)     35%,
+    var(--blue)     50%,
+    var(--green-dim)65%,
+    var(--green)    100%
+  );
+}
+/* Crimson divider line inside button */
+.btn-submit::before {
+  content: '';
+  position: absolute; left: 33%; top: 0; bottom: 0; width: 1px;
+  background: rgba(200,16,46,0.5);
+  opacity: 0.4;
+}
+/* Shine sweep */
+.btn-submit::after {
+  content: '';
+  position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+  transition: left 0.6s ease;
+}
+.btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(23,136,192,0.35), 0 4px 12px rgba(15,153,87,0.2); }
+.btn-submit:hover::after { left: 140%; }
+.btn-submit:disabled { opacity: 0.3; cursor: not-allowed; transform: none; box-shadow: none; }
+
+/* ══════════════════════
+   UPLOAD OVERLAY
+══════════════════════ */
+.upload-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(4,9,15,0.96);
+  backdrop-filter: blur(24px);
+  display: none; place-items: center;
+}
+.upload-overlay.active { display: grid; }
+
+.upload-progress-container {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 28px;
+  text-align: center; padding: 64px;
+  position: relative;
+}
+
+/* Concentric ring spinner */
+.spinner-wrap {
+  position: relative;
+  width: 80px; height: 80px;
+}
+.spinner-ring {
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  border: 1px solid transparent;
+  animation: spin linear infinite;
+}
+.spinner-ring:nth-child(1) {
+  border-top-color: var(--blue);
+  animation-duration: 1s;
+}
+.spinner-ring:nth-child(2) {
+  inset: 10px;
+  border-top-color: var(--crimson);
+  animation-duration: 1.4s;
+  animation-direction: reverse;
+}
+.spinner-ring:nth-child(3) {
+  inset: 20px;
+  border-top-color: var(--green);
+  animation-duration: 0.8s;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+#uploadStatus {
+  font-family: var(--font-display);
+  font-size: 28px; font-weight: 300;
+  color: var(--ivory); letter-spacing: 0.06em;
+}
+.upload-warning {
+  font-size: 10px; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--ivory-dim); opacity: 0.2;
+}
+
+/* Flag stripe decoration in overlay */
+.overlay-flag {
+  display: flex; gap: 0; width: 120px; height: 2px; border-radius: 1px; overflow: hidden;
+}
+.overlay-flag span:nth-child(1) { flex: 1; background: var(--blue); }
+.overlay-flag span:nth-child(2) { width: 6px; background: var(--crimson); }
+.overlay-flag span:nth-child(3) { flex: 1; background: var(--green); }
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .upload-shell { grid-template-columns: 1fr; }
+  .intro-panel { position: static; height: auto; padding: 48px 32px 40px; border-right: none; border-bottom: 1px solid rgba(23,136,192,0.08); }
+  .intro-panel::after { display: none; }
+  .form-panel { border-left: none; }
+}
+@media (max-width: 640px) {
+  .intro-panel { padding: 36px 20px 32px; }
+  .form-panel-header, .form-body { padding-left: 20px; padding-right: 20px; }
+  .intro-headline { font-size: 40px; }
+}
 </style>
 {% endblock %}
 
 {% block content %}
 
-<!-- Upload overlay -->
+<!-- Overlay -->
 <div class="upload-overlay" id="uploadOverlay">
   <div class="upload-progress-container">
-    <div class="upload-spinner"></div>
+    <div class="spinner-wrap">
+      <div class="spinner-ring"></div>
+      <div class="spinner-ring"></div>
+      <div class="spinner-ring"></div>
+    </div>
+    <div class="overlay-flag"><span></span><span></span><span></span></div>
     <h2 id="uploadStatus">Video yuklanmoqda...</h2>
     <p class="upload-warning">Iltimos, sahifani yopmang</p>
   </div>
 </div>
 
-<div class="upload-page">
+<div class="upload-page-bg"></div>
 
-  <!-- LEFT: Intro -->
-  <div class="upload-intro">
-    <div class="upload-eyebrow">Content Studio</div>
-    <h1>Share your<br><em>story</em></h1>
-    <p>Videolaringizni UzTube platformasiga yuklang va millionlab tomoshabinlarga yeting.</p>
-    <div class="upload-rules">
-      <div class="upload-rule">MP4, WebM, MOV yoki AVI formatlar</div>
-      <div class="upload-rule">Maksimal o'lcham 100MB</div>
-      <div class="upload-rule">Muqova rasm ixtiyoriy — avtomatik yaratiladi</div>
-      <div class="upload-rule">Mualliflik huquqini hurmat qiling</div>
+<div class="upload-shell">
+
+  <!-- ══ LEFT: Intro ══ -->
+  <div class="intro-panel">
+    <div class="intro-eyebrow">
+      <span class="intro-eyebrow-line"></span>
+      <span class="intro-eyebrow-text">Content Studio</span>
+    </div>
+
+    <h1 class="intro-headline">
+      Share your
+      <em>story</em>
+    </h1>
+
+    <p class="intro-desc">Videolaringizni UzTube platformasiga yuklang va millionlab tomoshabinlarga yeting.</p>
+
+    <div class="rules-list">
+      <div class="rule-item">
+        <span class="rule-dot"></span>
+        <span class="rule-text">MP4, WebM, MOV yoki AVI formatlar</span>
+      </div>
+      <div class="rule-item">
+        <span class="rule-dot"></span>
+        <span class="rule-text">Maksimal o'lcham 100MB</span>
+      </div>
+      <div class="rule-item">
+        <span class="rule-dot"></span>
+        <span class="rule-text">Muqova rasm ixtiyoriy — avtomatik yaratiladi</span>
+      </div>
+      <div class="rule-item">
+        <span class="rule-dot"></span>
+        <span class="rule-text">Mualliflik huquqini hurmat qiling</span>
+      </div>
     </div>
   </div>
 
-  <!-- RIGHT: Form -->
-  <div class="upload-form-column">
-    <div class="upload-card">
-      <form method="post" enctype="multipart/form-data" class="upload-form" id="uploadForm">
-        {% csrf_token %}
+  <!-- ══ RIGHT: Form ══ -->
+  <div class="form-panel">
 
-        <div id="errorContainer">
-          {% if form.errors %}
-          <ul class="error-list">
-            {% for field in form %}{% for error in field.errors %}<li>{{ error }}</li>{% endfor %}{% endfor %}
-            {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
-          </ul>
-          {% endif %}
-        </div>
+    <div class="form-panel-header">
+      <h2 class="form-panel-title">Video yuklash</h2>
+      <p class="form-panel-sub">Barcha maydonlarni to'ldiring</p>
+    </div>
 
-        <div class="form-group">
-          <label for="id_title">Sarlavha</label>
+    <div id="errorContainer">
+      {% if form.errors %}
+      <ul class="error-list">
+        {% for field in form %}{% for error in field.errors %}<li>{{ error }}</li>{% endfor %}{% endfor %}
+        {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+
+    <form method="post" enctype="multipart/form-data" id="uploadForm">
+      {% csrf_token %}
+      <div class="form-body">
+
+        <!-- Title -->
+        <div class="field-group">
+          <div class="field-label">
+            <span class="field-label-text">Sarlavha</span>
+            <span class="field-label-hint">Majburiy</span>
+          </div>
           <input type="text" name="title" id="id_title" class="form-input"
             placeholder="Video sarlavhasini kiriting"
             value="{{ form.title.value|default:'' }}" required />
+          <div class="field-footer"></div>
         </div>
 
-        <div class="form-group">
-          <label for="id_description">Tavsif</label>
+        <!-- Description -->
+        <div class="field-group">
+          <div class="field-label">
+            <span class="field-label-text">Tavsif</span>
+            <span class="field-label-hint">Ixtiyoriy</span>
+          </div>
           <textarea name="description" id="id_description" class="form-input"
-            placeholder="Video haqida qisqacha ma'lumot" rows="3">{{ form.description.value|default:'' }}</textarea>
+            placeholder="Video haqida qisqacha ma'lumot" rows="4">{{ form.description.value|default:'' }}</textarea>
+          <div class="field-footer"></div>
         </div>
 
-        <div class="form-group">
-          <label for="id_video_file">Video fayl</label>
-          <label class="file-input-wrapper" for="id_video_file">
-            <span id="video-label">Video fayl tanlash uchun bosing</span>
-          </label>
+        <!-- Divider -->
+        <div class="section-divider">
+          <span class="section-divider-text">Media fayllar</span>
+          <div class="section-divider-line"></div>
+        </div>
+
+        <!-- Video file drop zone -->
+        <div>
+          <div class="drop-zone" id="videoDropZone">
+            <div class="drop-content" style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+              <div class="drop-icon" id="videoDropIcon">🎬</div>
+              <div class="drop-label" id="videoDropLabel">
+                <span>Bosing</span> yoki videoni bu yerga tashlang
+              </div>
+              <div class="drop-hint">MP4 · WebM · MOV · AVI · Maks 100MB</div>
+            </div>
+          </div>
           <input type="file" name="video_file" id="id_video_file" accept="video/*" required style="display:none;" />
-          <span class="help-text">MP4, WebM, MOV yoki AVI · Maks 100MB</span>
         </div>
 
-        <div class="form-group">
-          <label for="customThumbnail">Muqova rasmi <span style="opacity:.4;font-weight:300;">(ixtiyoriy)</span></label>
-          <label class="file-input-wrapper thumb-wrapper" for="customThumbnail">
-            <img id="thumbPreview">
-            <span id="thumb-label">Muqova rasm tanlash uchun bosing</span>
-          </label>
+        <!-- Thumbnail drop zone -->
+        <div>
+          <div class="section-divider" style="margin-bottom:12px;">
+            <span class="section-divider-text">Muqova rasmi</span>
+            <div class="section-divider-line"></div>
+            <span class="field-label-hint" style="white-space:nowrap;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ivory-dim);opacity:.3;">Ixtiyoriy</span>
+          </div>
+          <div class="drop-zone thumb-drop-zone" id="thumbDropZone" style="position:relative;">
+            <img class="thumb-preview-img" id="thumbPreview" alt="Muqova">
+            <div class="thumb-overlay"><span class="thumb-overlay-text">Rasmni almashtirish</span></div>
+            <div class="drop-content">
+              <div class="drop-icon">🖼️</div>
+              <div class="drop-label" id="thumbDropLabel">
+                <span>Bosing</span> yoki rasmni tashlang
+              </div>
+              <div class="drop-hint">JPG · PNG · WebP · Tavsiya: 1280×720</div>
+            </div>
+          </div>
           <input type="file" id="customThumbnail" accept="image/*" style="display:none;" />
           <input type="hidden" name="thumbnail_data" id="thumbnailData" />
-          <span class="help-text">Bo'sh qoldirsangiz, avtomatik yaratiladi</span>
         </div>
 
-        <button type="submit" class="btn-submit" id="submitBtn">Video yuklash</button>
-      </form>
-    </div>
-  </div>
-</div>
+        <!-- Submit -->
+        <div class="submit-wrap">
+          <button type="submit" class="btn-submit" id="submitBtn">
+            Video yuklash
+          </button>
+        </div>
 
+      </div>
+    </form>
+  </div>
+
+</div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
 const $ = id => document.getElementById(id);
 
-$("id_video_file").onchange = e => {
-  const file = e.target.files[0];
-  $("video-label").textContent = file ? file.name : "Video fayl tanlash uchun bosing";
-};
+/* ── Video file ── */
+const videoInput = $("id_video_file");
+const videoZone  = $("videoDropZone");
 
-$("customThumbnail").onchange = e => {
-  const file = e.target.files[0];
-  if (!file) return;
+videoZone.addEventListener("click", () => videoInput.click());
+videoInput.addEventListener("change", e => {
+  const f = e.target.files[0];
+  if (!f) return;
+  videoZone.classList.add("has-file");
+  $("videoDropIcon").textContent = "✅";
+  $("videoDropLabel").innerHTML = `<span style="color:var(--green-light)">${f.name}</span>`;
+});
+
+/* Drag & drop — video */
+["dragenter","dragover"].forEach(ev => {
+  videoZone.addEventListener(ev, e => { e.preventDefault(); videoZone.classList.add("dragover"); });
+});
+["dragleave","drop"].forEach(ev => {
+  videoZone.addEventListener(ev, e => {
+    e.preventDefault(); videoZone.classList.remove("dragover");
+    if (ev === "drop" && e.dataTransfer.files.length) {
+      videoInput.files = e.dataTransfer.files;
+      videoInput.dispatchEvent(new Event("change"));
+    }
+  });
+});
+
+/* ── Thumbnail ── */
+const thumbInput = $("customThumbnail");
+const thumbZone  = $("thumbDropZone");
+
+thumbZone.addEventListener("click", () => thumbInput.click());
+thumbInput.addEventListener("change", e => {
+  const f = e.target.files[0]; if (!f) return;
   const reader = new FileReader();
   reader.onload = ev => {
-    $("thumbPreview").src = ev.target.result;
-    $("thumbPreview").classList.add("visible");
-    $("thumb-label").style.display = "none";
+    const img = $("thumbPreview");
+    img.src = ev.target.result;
+    img.classList.add("visible");
     $("thumbnailData").value = ev.target.result;
+    thumbZone.querySelector(".drop-content").style.display = "none";
   };
-  reader.readAsDataURL(file);
-};
+  reader.readAsDataURL(f);
+});
 
-$("uploadForm").onsubmit = async e => {
+/* Drag & drop — thumb */
+["dragenter","dragover"].forEach(ev => {
+  thumbZone.addEventListener(ev, e => { e.preventDefault(); thumbZone.classList.add("dragover"); });
+});
+["dragleave","drop"].forEach(ev => {
+  thumbZone.addEventListener(ev, e => {
+    e.preventDefault(); thumbZone.classList.remove("dragover");
+    if (ev === "drop" && e.dataTransfer.files.length) {
+      thumbInput.files = e.dataTransfer.files;
+      thumbInput.dispatchEvent(new Event("change"));
+    }
+  });
+});
+
+/* ── Form submit ── */
+$("uploadForm").addEventListener("submit", async e => {
   e.preventDefault();
-  if (!$("id_video_file").files.length || !$("id_title").value.trim()) return;
+  if (!videoInput.files.length || !$("id_title").value.trim()) return;
+
   $("uploadOverlay").classList.add("active");
   $("submitBtn").disabled = true;
   $("errorContainer").innerHTML = "";
   window.onbeforeunload = () => "Yuklash davom etmoqda";
 
   try {
+    const fd = new FormData($("uploadForm"));
     const res = await fetch("{% url 'videos:video_upload_submit' %}", {
       method: "POST",
       headers: {
         "X-CSRFToken": document.cookie.split(";")
           .find(c => c.trim().startsWith("csrftoken="))?.split("=")[1]
       },
-      body: new FormData(e.target)
+      body: fd
     });
     const data = await res.json();
     window.onbeforeunload = null;
+
     if (data.success) {
-      $("uploadStatus").textContent = "Yuklash yakunlandi!";
-      setTimeout(() => location.href = '{% url "videos:video_list" %}', 600);
+      $("uploadStatus").textContent = "Yuklash yakunlandi! ✅";
+      setTimeout(() => location.href = '{% url "videos:video_list" %}', 700);
     } else {
       throw new Error(data.error);
     }
-  } catch (err) {
+  } catch(err) {
     window.onbeforeunload = null;
     $("uploadOverlay").classList.remove("active");
     $("submitBtn").disabled = false;
-    $("errorContainer").innerHTML = `<ul class="error-list"><li>${err.message || "Yuklash muvaffaqiyatsiz tugadi"}</li></ul>`;
+    $("errorContainer").innerHTML = `
+      <ul class="error-list">
+        <li>${err.message || "Yuklash muvaffaqiyatsiz tugadi"}</li>
+      </ul>`;
   }
-};
+});
+
+/* ── Entrance animation ── */
+[".intro-eyebrow", ".intro-headline", ".intro-desc", ".rules-list",
+ ".form-panel-header", ".field-group", ".drop-zone", ".submit-wrap"
+].forEach((sel, i) => {
+  document.querySelectorAll(sel).forEach((el, j) => {
+    el.style.cssText += `opacity:0;transform:translateY(16px);transition:opacity 0.55s ease ${(i+j)*0.07}s,transform 0.55s ease ${(i+j)*0.07}s`;
+    setTimeout(() => { el.style.opacity='1'; el.style.transform='translateY(0)'; }, 80+(i+j)*70);
+  });
+});
 </script>
 {% endblock %}

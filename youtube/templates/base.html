@@ -8,9 +8,7 @@
     <meta name="description" content="UzTube - O'zbekiston uchun mahalliy video platforma." />
     <meta property="og:title" content="UzTube - O'zbekiston video platformasi" />
     <meta property="og:description" content="Musiqa, yangiliklar, sport va ta'lim videolarini UzTube orqali tomosha qiling." />
-    <meta property="og:image" content="{% static 'images/uztube-og.svg' %}" />
     <meta property="og:type" content="website" />
-    <link rel="icon" type="image/svg+xml" href="{% static 'images/favicon.svg' %}" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
@@ -25,45 +23,70 @@
     {% block extra_css %}{% endblock %}
 
     <style>
-      /* ═══════════════════════════════════════════════
-         UZTUBE — PREMIUM DESIGN SYSTEM
-         Palette: Deep Noir + Champagne Gold + Ivory
-      ═══════════════════════════════════════════════ */
+      /* ═══════════════════════════════════════════════════════
+         UZTUBE — UZBEKISTAN FLAG DESIGN SYSTEM
+         🇺🇿  Navy · Cerulean · Emerald · Crimson · Ivory
+         Palette:
+           Navy bg: #060d1a → #0c1a2e → #122238
+           Cerulean (flag blue): #1788c0 → #2ab5e8 → #0d5f8a
+           Emerald (flag green): #0f9957 → #17cc74 → #0a6639
+           Crimson  (flag stripe): #c8102e
+           Ivory: #eef2f7 → #9db3c8
+      ═══════════════════════════════════════════════════════ */
       :root {
-        --noir:        #0a0a0b;
-        --noir-2:      #111113;
-        --noir-3:      #1a1a1e;
-        --noir-4:      #242428;
-        --noir-5:      #2e2e34;
-        --gold:        #c9a84c;
-        --gold-light:  #e2c97e;
-        --gold-dim:    #8a6f2e;
-        --ivory:       #f5f0e8;
-        --ivory-dim:   #c8bfa8;
-        --white:       #ffffff;
-        --red:         #c0392b;
+        /* ── Backgrounds ── */
+        --bg-0:        #04090f;
+        --bg-1:        #060d1a;
+        --bg-2:        #0b1829;
+        --bg-3:        #111f35;
+        --bg-4:        #172843;
+        --bg-5:        #1d3254;
 
+        /* ── Cerulean (flag blue) ── */
+        --blue:        #1788c0;
+        --blue-light:  #2ab5e8;
+        --blue-dim:    #0d5f8a;
+        --blue-ghost:  rgba(23,136,192,0.12);
+
+        /* ── Emerald (flag green) ── */
+        --green:       #0f9957;
+        --green-light: #17cc74;
+        --green-dim:   #0a6639;
+        --green-ghost: rgba(15,153,87,0.1);
+
+        /* ── Crimson (flag red stripe) ── */
+        --crimson:     #c8102e;
+        --crimson-dim: rgba(200,16,46,0.6);
+
+        /* ── Text ── */
+        --ivory:       #eef2f7;
+        --ivory-dim:   #8ba3bc;
+        --white:       #ffffff;
+
+        /* ── Typography ── */
         --font-display: 'Cormorant Garamond', Georgia, serif;
         --font-body:    'DM Sans', system-ui, sans-serif;
 
+        /* ── Radii ── */
         --radius-sm:   4px;
-        --radius-md:   8px;
-        --radius-lg:   16px;
+        --radius-md:   10px;
+        --radius-lg:   18px;
         --radius-pill: 999px;
 
-        --shadow-gold: 0 0 0 1px rgba(201,168,76,0.15), 0 8px 32px rgba(0,0,0,0.6);
-        --shadow-card: 0 2px 8px rgba(0,0,0,0.4), 0 16px 48px rgba(0,0,0,0.3);
+        /* ── Shadows ── */
+        --shadow-blue:  0 0 0 1px rgba(23,136,192,0.15), 0 8px 32px rgba(0,0,0,0.7);
+        --shadow-card:  0 2px 8px rgba(0,0,0,0.5), 0 16px 48px rgba(0,0,0,0.3);
 
-        --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        /* ── Transitions ── */
+        --t:      0.24s cubic-bezier(0.4,0,0.2,1);
+        --t-slow: 0.55s cubic-bezier(0.4,0,0.2,1);
       }
 
       *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
       html { scroll-behavior: smooth; }
 
       body {
-        background: var(--noir);
+        background: var(--bg-1);
         color: var(--ivory);
         font-family: var(--font-body);
         font-size: 15px;
@@ -75,218 +98,219 @@
         -webkit-font-smoothing: antialiased;
       }
 
-      /* ── Noise texture overlay ── */
+      /* ── Subtle grid texture ── */
       body::before {
         content: '';
         position: fixed;
         inset: 0;
-        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+        background-image:
+          linear-gradient(rgba(23,136,192,0.025) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(23,136,192,0.025) 1px, transparent 1px);
+        background-size: 48px 48px;
         pointer-events: none;
         z-index: 0;
-        opacity: 0.4;
       }
 
-      /* ── NAVBAR ── */
+      /* ════════════════════
+         NAVBAR
+      ════════════════════ */
       .navbar {
         position: sticky;
         top: 0;
-        z-index: 100;
+        z-index: 200;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0 48px;
+        padding: 0 56px;
         height: 68px;
-        background: rgba(10,10,11,0.85);
-        backdrop-filter: blur(20px) saturate(180%);
-        -webkit-backdrop-filter: blur(20px) saturate(180%);
-        border-bottom: 1px solid rgba(201,168,76,0.12);
+        background: rgba(4,9,15,0.88);
+        backdrop-filter: blur(24px) saturate(180%);
+        -webkit-backdrop-filter: blur(24px) saturate(180%);
+        border-bottom: 1px solid rgba(23,136,192,0.15);
+      }
+
+      /* Flag stripe — 3 lines: blue, crimson, green */
+      .navbar::after {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: 0; right: 0;
+        height: 3px;
+        background: linear-gradient(to right,
+          var(--blue)    0%,   var(--blue)    33%,
+          var(--crimson) 33%,  var(--crimson) 34%,
+          var(--ivory)   34%,  var(--ivory)   35%,
+          var(--green)   35%,  var(--green)   67%,
+          transparent    67%
+        );
+        opacity: 0.35;
       }
 
       .navbar-brand {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 0;
         text-decoration: none;
         flex-shrink: 0;
       }
-
-      .brand-icon {
-        font-size: 20px;
-        filter: drop-shadow(0 0 8px rgba(201,168,76,0.5));
-      }
-
-      .navbar-brand span[data-i18n] {
-        font-family: var(--font-display);
-        font-size: 26px;
-        font-weight: 600;
-        letter-spacing: 0.08em;
-        color: var(--gold);
-        background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 50%, var(--gold) 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
+      .navbar-brand svg { display: block; }
 
       .navbar-nav {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
         list-style: none;
       }
-
       .navbar-nav li { display: flex; align-items: center; }
 
       /* Lang switcher */
       .lang-switcher {
         background: transparent;
-        border: 1px solid rgba(201,168,76,0.2);
+        border: 1px solid rgba(23,136,192,0.2);
         color: var(--ivory-dim);
         font-family: var(--font-body);
-        font-size: 12px;
+        font-size: 11px;
         font-weight: 400;
         letter-spacing: 0.08em;
         padding: 6px 10px;
         border-radius: var(--radius-sm);
         cursor: pointer;
-        transition: var(--transition);
+        transition: var(--t);
         text-transform: uppercase;
       }
-      .lang-switcher:hover { border-color: var(--gold); color: var(--gold); }
-      .lang-switcher option { background: var(--noir-3); }
+      .lang-switcher:hover { border-color: var(--blue); color: var(--blue-light); }
+      .lang-switcher option { background: var(--bg-3); }
 
-      /* Nav links */
       .nav-link {
         display: inline-flex;
         align-items: center;
         padding: 8px 16px;
         text-decoration: none;
-        font-size: 13px;
+        font-size: 12px;
         font-weight: 400;
-        letter-spacing: 0.06em;
+        letter-spacing: 0.07em;
         color: var(--ivory-dim);
         border-radius: var(--radius-sm);
-        transition: var(--transition);
+        transition: var(--t);
         white-space: nowrap;
       }
       .nav-link:hover { color: var(--ivory); }
 
       .btn-upload {
-        border: 1px solid rgba(201,168,76,0.35);
-        color: var(--gold-light);
-        background: rgba(201,168,76,0.06);
-        letter-spacing: 0.1em;
+        border: 1px solid rgba(23,136,192,0.35);
+        color: var(--blue-light);
+        background: rgba(23,136,192,0.07);
+        letter-spacing: 0.12em;
         text-transform: uppercase;
-        font-size: 11px;
+        font-size: 10px;
         font-weight: 500;
       }
       .btn-upload:hover {
-        background: rgba(201,168,76,0.14);
-        border-color: var(--gold);
-        color: var(--gold);
+        background: rgba(23,136,192,0.16);
+        border-color: var(--blue-light);
+        color: var(--white);
       }
 
       .btn-outline {
         border: 1px solid rgba(255,255,255,0.1);
         color: var(--ivory-dim);
       }
-      .btn-outline:hover { border-color: rgba(255,255,255,0.25); color: var(--ivory); }
+      .btn-outline:hover { border-color: rgba(255,255,255,0.22); color: var(--ivory); }
 
       .btn-primary {
-        background: linear-gradient(135deg, var(--gold-dim), var(--gold));
-        color: var(--noir) !important;
+        background: linear-gradient(135deg, var(--blue-dim), var(--blue));
+        color: var(--white) !important;
         font-weight: 500;
-        letter-spacing: 0.08em;
+        letter-spacing: 0.1em;
         text-transform: uppercase;
-        font-size: 11px;
+        font-size: 10px;
+        border-radius: var(--radius-sm);
       }
       .btn-primary:hover {
-        background: linear-gradient(135deg, var(--gold), var(--gold-light));
+        background: linear-gradient(135deg, var(--blue), var(--blue-light));
         transform: translateY(-1px);
-        box-shadow: 0 4px 16px rgba(201,168,76,0.3);
+        box-shadow: 0 4px 20px rgba(23,136,192,0.35);
       }
 
       .nav-username {
-        font-size: 12px;
-        letter-spacing: 0.1em;
+        font-size: 11px;
+        letter-spacing: 0.12em;
         text-transform: uppercase;
-        color: var(--gold-dim);
+        color: var(--blue-dim);
         padding: 0 12px;
         font-weight: 500;
       }
 
       .logout-form { display: flex; }
-      .logout-btn {
-        background: none;
-        cursor: pointer;
-        font-family: var(--font-body);
-      }
+      .logout-btn { background: none; cursor: pointer; font-family: var(--font-body); }
 
-      /* ── MAIN ── */
-      .main-content {
-        flex: 1;
-        position: relative;
-        z-index: 1;
-      }
+      /* ════════════════════
+         MAIN + MESSAGES
+      ════════════════════ */
+      .main-content { flex: 1; position: relative; z-index: 1; }
 
-      /* ── MESSAGES ── */
-      .messages {
-        list-style: none;
-        padding: 16px 48px;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-      }
+      .messages { list-style: none; padding: 16px 56px; display: flex; flex-direction: column; gap: 8px; }
       .message {
         padding: 14px 20px;
         border-radius: var(--radius-md);
         font-size: 13px;
         letter-spacing: 0.03em;
-        border-left: 3px solid var(--gold);
-        background: rgba(201,168,76,0.06);
-        color: var(--gold-light);
+        border-left: 3px solid var(--blue);
+        background: rgba(23,136,192,0.07);
+        color: var(--blue-light);
         animation: slideIn 0.3s ease;
       }
-      .message.error {
-        border-color: var(--red);
-        background: rgba(192,57,43,0.08);
-        color: #e74c3c;
-      }
+      .message.error { border-color: var(--crimson); background: rgba(200,16,46,0.08); color: #f05070; }
       @keyframes slideIn {
-        from { opacity: 0; transform: translateY(-8px); }
-        to   { opacity: 1; transform: translateY(0); }
+        from { opacity:0; transform:translateY(-8px); }
+        to   { opacity:1; transform:translateY(0); }
       }
 
-      /* ── FOOTER ── */
+      /* ════════════════════
+         FOOTER
+      ════════════════════ */
       .site-footer {
         position: relative;
         z-index: 1;
-        padding: 32px 48px;
-        border-top: 1px solid rgba(201,168,76,0.08);
+        padding: 32px 56px;
         text-align: center;
+        border-top: 1px solid rgba(23,136,192,0.08);
+      }
+      /* Flag stripe on footer */
+      .site-footer::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 2px;
+        background: linear-gradient(to right,
+          transparent 0%,
+          var(--blue)    20%, var(--blue)    40%,
+          var(--crimson) 40%, var(--crimson) 41%,
+          var(--green)   41%, var(--green)   60%,
+          transparent 100%
+        );
+        opacity: 0.25;
       }
       .site-footer p {
-        font-size: 12px;
-        letter-spacing: 0.08em;
-        color: rgba(200,191,168,0.35);
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        color: rgba(139,163,188,0.3);
         text-transform: uppercase;
       }
-      .site-footer a {
-        color: var(--gold-dim);
-        text-decoration: none;
-        transition: color var(--transition);
-      }
-      .site-footer a:hover { color: var(--gold); }
+      .site-footer a { color: var(--blue-dim); text-decoration: none; transition: color var(--t); }
+      .site-footer a:hover { color: var(--blue-light); }
 
-      /* ── SCROLLBAR ── */
-      ::-webkit-scrollbar { width: 6px; }
-      ::-webkit-scrollbar-track { background: var(--noir-2); }
-      ::-webkit-scrollbar-thumb { background: var(--noir-5); border-radius: 3px; }
-      ::-webkit-scrollbar-thumb:hover { background: var(--gold-dim); }
+      /* ════════════════════
+         SCROLLBAR
+      ════════════════════ */
+      ::-webkit-scrollbar { width: 5px; }
+      ::-webkit-scrollbar-track { background: var(--bg-2); }
+      ::-webkit-scrollbar-thumb { background: var(--bg-5); border-radius: 3px; }
+      ::-webkit-scrollbar-thumb:hover { background: var(--blue-dim); }
 
-      /* ── RESPONSIVE ── */
+      /* ── Responsive ── */
       @media (max-width: 768px) {
         .navbar { padding: 0 20px; }
-        .navbar-nav { gap: 4px; }
         .nav-username { display: none; }
         .messages { padding: 12px 20px; }
         .site-footer { padding: 24px 20px; }
@@ -295,15 +319,85 @@
   </head>
   <body>
     <nav class="navbar">
-      <a href="/" class="navbar-brand">
-        <span class="brand-icon">🎬</span>
-        <span data-i18n="brand">UzTube</span>
+      <a href="/" class="navbar-brand" aria-label="UzTube — bosh sahifa">
+        <!-- ══ ICON MARK ══ -->
+        <svg width="44" height="44" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="nb-bg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#0d1f35"/>
+              <stop offset="100%" stop-color="#061222"/>
+            </linearGradient>
+            <linearGradient id="nb-play" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#2ab5e8"/>
+              <stop offset="100%" stop-color="#17cc74"/>
+            </linearGradient>
+            <linearGradient id="nb-stripe" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%"   stop-color="#1788c0"/>
+              <stop offset="33%"  stop-color="#1788c0"/>
+              <stop offset="33%"  stop-color="#c8102e"/>
+              <stop offset="44%"  stop-color="#c8102e"/>
+              <stop offset="44%"  stop-color="#0f9957"/>
+              <stop offset="100%" stop-color="#0f9957"/>
+            </linearGradient>
+          </defs>
+          <!-- Outer tile -->
+          <rect x="1" y="1" width="42" height="42" rx="10"
+                fill="url(#nb-bg)" stroke="rgba(23,136,192,0.28)" stroke-width="1"/>
+          <!-- Flag stripe — left edge -->
+          <rect x="1" y="1" width="2.5" height="42" rx="1.25" fill="url(#nb-stripe)" opacity="0.85"/>
+          <!-- Film reel dots (top) -->
+          <circle cx="14" cy="11" r="3.5" fill="none" stroke="rgba(42,181,232,0.45)" stroke-width="1"/>
+          <circle cx="14" cy="11" r="1.2" fill="rgba(42,181,232,0.5)"/>
+          <circle cx="30" cy="11" r="3.5" fill="none" stroke="rgba(42,181,232,0.45)" stroke-width="1"/>
+          <circle cx="30" cy="11" r="1.2" fill="rgba(42,181,232,0.5)"/>
+          <!-- Film top bar -->
+          <rect x="8" y="7.5" width="28" height="7" rx="1.5"
+                fill="rgba(23,136,192,0.1)" stroke="rgba(23,136,192,0.22)" stroke-width="0.6"/>
+          <!-- Perforations -->
+          <rect x="10" y="9"  width="3.5" height="4" rx="0.8" fill="rgba(42,181,232,0.45)"/>
+          <rect x="30.5" y="9" width="3.5" height="4" rx="0.8" fill="rgba(42,181,232,0.45)"/>
+          <!-- Screen -->
+          <rect x="7" y="17" width="30" height="20" rx="3"
+                fill="rgba(6,18,34,0.95)" stroke="rgba(23,136,192,0.18)" stroke-width="0.6"/>
+          <!-- Play glow -->
+          <circle cx="22" cy="27" r="9" fill="rgba(23,136,192,0.07)"/>
+          <!-- Play triangle -->
+          <polygon points="17,21 17,33 30,27" fill="url(#nb-play)" opacity="0.95"/>
+        </svg>
+
+        <!-- ══ WORDMARK ══ -->
+        <svg width="108" height="44" viewBox="0 0 108 44" xmlns="http://www.w3.org/2000/svg" aria-label="UzTube" style="margin-left:6px;">
+          <!-- "Uz" cerulean -->
+          <text x="2" y="31"
+                font-family="'Cormorant Garamond', Georgia, serif"
+                font-size="30" font-weight="400" letter-spacing="-0.5"
+                fill="#2ab5e8">Uz</text>
+          <!-- "T" ivory -->
+          <text x="36" y="31"
+                font-family="'Cormorant Garamond', Georgia, serif"
+                font-size="30" font-weight="400"
+                fill="#eef2f7">T</text>
+          <!-- "ube" green italic -->
+          <text x="52" y="31"
+                font-family="'Cormorant Garamond', Georgia, serif"
+                font-size="30" font-weight="300" font-style="italic"
+                fill="#17cc74">ube</text>
+          <!-- Flag stripe underline -->
+          <rect x="2"  y="37" width="22" height="1.5" rx="0.75" fill="#1788c0" opacity="0.7"/>
+          <rect x="25" y="37" width="4"  height="1.5" rx="0.75" fill="#c8102e" opacity="0.7"/>
+          <rect x="30" y="37" width="22" height="1.5" rx="0.75" fill="#0f9957" opacity="0.7"/>
+        </svg>
       </a>
       <ul class="navbar-nav">
-        {% if user.is_authenticated %}
         <li>
-          <a href="{% url 'videos:video_upload' %}" class="nav-link btn-upload" data-i18n="upload">Yuklash</a>
+          <select id="langSwitcher" class="lang-switcher" aria-label="Language">
+            <option value="uz">O'zbek</option>
+            <option value="ru">Русский</option>
+            <option value="en">English</option>
+          </select>
         </li>
+        {% if user.is_authenticated %}
+        <li><a href="{% url 'videos:video_upload' %}" class="nav-link btn-upload" data-i18n="upload">Yuklash</a></li>
         <li><span class="nav-username">{{ user.username }}</span></li>
         <li>
           <form method="post" action="{% url 'accounts:logout' %}" class="logout-form">
@@ -312,15 +406,12 @@
           </form>
         </li>
         {% else %}
-        <li>
-          <a href="{% url 'accounts:login' %}" class="nav-link" data-i18n="signin">Kirish</a>
-        </li>
-        <li>
-          <a href="{% url 'accounts:register' %}" class="nav-link btn-primary" data-i18n="signup">Ro'yxatdan o'tish</a>
-        </li>
+        <li><a href="{% url 'accounts:login' %}" class="nav-link" data-i18n="signin">Kirish</a></li>
+        <li><a href="{% url 'accounts:register' %}" class="nav-link btn-primary" data-i18n="signup">Ro'yxatdan o'tish</a></li>
         {% endif %}
       </ul>
     </nav>
+
     <main class="main-content">
       {% if messages %}
       <ul class="messages">
@@ -331,11 +422,13 @@
       {% endif %}
       {% block content %}{% endblock %}
     </main>
+
     <footer class="site-footer">
       <p>
         <span data-i18n="footerText">© 2025 UzTube — Built by</span>
         <a href="#" target="_blank" rel="noopener">Your Name</a> &nbsp;·&nbsp;
         <a href="https://github.com/yourusername" target="_blank" rel="noopener" data-i18n="github">GitHub</a>
+        &nbsp;·&nbsp; 🇺🇿
       </p>
     </footer>
 
@@ -348,14 +441,8 @@
       function applyLanguage(lang) {
         const locale = i18n[lang] || i18n.uz;
         document.documentElement.lang = lang;
-        document.querySelectorAll("[data-i18n]").forEach(node => {
-          const key = node.dataset.i18n;
-          if (locale[key]) node.textContent = locale[key];
-        });
-        document.querySelectorAll("[data-i18n-placeholder]").forEach(node => {
-          const key = node.dataset.i18nPlaceholder;
-          if (locale[key]) node.placeholder = locale[key];
-        });
+        document.querySelectorAll("[data-i18n]").forEach(n => { if(locale[n.dataset.i18n]) n.textContent = locale[n.dataset.i18n]; });
+        document.querySelectorAll("[data-i18n-placeholder]").forEach(n => { if(locale[n.dataset.i18nPlaceholder]) n.placeholder = locale[n.dataset.i18nPlaceholder]; });
         localStorage.setItem("uztube_lang", lang);
       }
       const savedLang = localStorage.getItem("uztube_lang") || "uz";

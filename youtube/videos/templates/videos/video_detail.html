@@ -1,257 +1,191 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block title %}{{ video.title }} - UzTube{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/videos.css' %}">
 <link rel="stylesheet" href="{% static 'css/videoplayer.css' %}">
 <style>
-  /* ══════════════════════════════════════
-     VIDEO DETAIL — Premium Watch Page
-  ══════════════════════════════════════ */
+/* ═══════════════════════════════════════════════
+   VIDEO DETAIL — Uzbekistan Flag Luxury
+═══════════════════════════════════════════════ */
 
-  .watch-layout {
-    display: grid;
-    grid-template-columns: 1fr 360px;
-    gap: 0;
-    max-width: 1440px;
-    margin: 0 auto;
-    min-height: calc(100vh - 68px);
-  }
+.watch-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  max-width: 1440px;
+  margin: 0 auto;
+  min-height: calc(100vh - 68px);
+}
 
-  /* ── Left: Player column ── */
-  .player-column {
-    padding: 32px 36px 48px 48px;
-    border-right: 1px solid rgba(201,168,76,0.07);
-  }
+/* ── Player column ── */
+.player-column {
+  padding: 36px 40px 56px 56px;
+  border-right: 1px solid rgba(23,136,192,0.08);
+}
 
-  /* ── Player ── */
-  .video-player-wrap {
-    position: relative;
-    aspect-ratio: 16/9;
-    background: #000;
-    border-radius: var(--radius-md);
-    overflow: hidden;
-    box-shadow: 0 0 0 1px rgba(201,168,76,0.1), var(--shadow-card);
-  }
-  .video-player-wrap video {
-    width: 100%;
-    height: 100%;
-    display: block;
-    background: #000;
-  }
-  .video-error {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    background: var(--noir-3);
-    color: var(--ivory-dim);
-    text-align: center;
-  }
-  .error-icon { font-size: 36px; opacity: 0.4; }
-  .video-error p { font-size: 14px; opacity: 0.6; }
-  .video-error small { font-size: 11px; opacity: 0.35; letter-spacing: 0.05em; }
+/* Player wrapper */
+.video-player-wrap {
+  position: relative;
+  aspect-ratio: 16/9;
+  background: #000;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  /* Tri-color glow: blue left, green right */
+  box-shadow:
+    -6px 0 40px rgba(23,136,192,0.12),
+    6px 0 40px rgba(15,153,87,0.08),
+    0 20px 60px rgba(0,0,0,0.7);
+  border: 1px solid rgba(23,136,192,0.12);
+}
+.video-player-wrap video { width: 100%; height: 100%; display: block; background: #000; }
 
-  /* ── Video Details ── */
-  .video-details {
-    padding: 28px 0 0;
-  }
-  .video-details h1 {
-    font-family: var(--font-display);
-    font-size: clamp(22px, 3vw, 34px);
-    font-weight: 400;
-    line-height: 1.2;
-    color: var(--ivory);
-    letter-spacing: 0.01em;
-    margin-bottom: 20px;
-  }
+/* Flag stripe on player top */
+.video-player-wrap::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px; z-index: 10;
+  background: linear-gradient(to right,
+    var(--blue)    0%,   var(--blue)    33%,
+    var(--crimson) 33%,  var(--crimson) 34%,
+    var(--green)   34%,  var(--green)   67%,
+    transparent    100%
+  );
+  opacity: 0.6;
+}
 
-  /* Stats bar */
-  .video-stats {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 0;
-    border-top: 1px solid rgba(201,168,76,0.08);
-    border-bottom: 1px solid rgba(201,168,76,0.08);
-    margin-bottom: 24px;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-  .video-stats-left {
-    font-size: 12px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--ivory-dim);
-    opacity: 0.5;
-  }
-  .video-actions {
-    display: flex;
-    gap: 8px;
-  }
-  .vote-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 9px 20px;
-    border-radius: var(--radius-pill);
-    border: 1px solid rgba(201,168,76,0.15);
-    background: transparent;
-    color: var(--ivory-dim);
-    font-family: var(--font-body);
-    font-size: 13px;
-    font-weight: 400;
-    cursor: pointer;
-    transition: var(--transition);
-    letter-spacing: 0.04em;
-  }
-  .vote-btn:hover {
-    border-color: rgba(201,168,76,0.35);
-    color: var(--ivory);
-    background: rgba(201,168,76,0.05);
-  }
-  .vote-btn.active {
-    border-color: var(--gold);
-    background: rgba(201,168,76,0.1);
-    color: var(--gold-light);
-  }
+.video-error {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 12px;
+  background: var(--bg-3); color: var(--ivory-dim); text-align: center;
+}
+.error-icon { font-size: 36px; opacity: 0.35; }
+.video-error p { font-size: 14px; opacity: 0.55; }
+.video-error small { font-size: 11px; opacity: 0.3; letter-spacing: 0.05em; }
 
-  /* Channel row */
-  .video-channel {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 24px;
-  }
-  .channel-avatar {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--noir-4), var(--noir-5));
-    border: 1px solid rgba(201,168,76,0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--font-display);
-    font-size: 18px;
-    font-weight: 500;
-    color: var(--gold);
-    flex-shrink: 0;
-  }
-  .channel-name {
-    font-size: 14px;
-    font-weight: 400;
-    color: var(--ivory);
-    text-decoration: none;
-    letter-spacing: 0.04em;
-    transition: color var(--transition);
-  }
-  .channel-name:hover { color: var(--gold); }
+/* ── Video details ── */
+.video-details { padding: 30px 0 0; }
 
-  /* Description */
-  .video-description {
-    font-size: 14px;
-    line-height: 1.7;
-    color: var(--ivory-dim);
-    opacity: 0.7;
-    padding: 20px;
-    border-radius: var(--radius-md);
-    background: var(--noir-2);
-    border: 1px solid rgba(255,255,255,0.04);
-    white-space: pre-wrap;
-    margin-bottom: 24px;
-  }
+.video-details h1 {
+  font-family: var(--font-display);
+  font-size: clamp(22px, 3vw, 36px);
+  font-weight: 400; line-height: 1.2;
+  color: var(--ivory); letter-spacing: 0.01em; margin-bottom: 22px;
+}
 
-  /* Owner actions */
-  .video-owner-actions { margin-top: 8px; }
-  .delete-btn {
-    padding: 9px 22px;
-    border-radius: var(--radius-sm);
-    border: 1px solid rgba(192,57,43,0.3);
-    background: transparent;
-    color: rgba(192,57,43,0.7);
-    font-family: var(--font-body);
-    font-size: 12px;
-    font-weight: 400;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: var(--transition);
-  }
-  .delete-btn:hover {
-    border-color: var(--red);
-    background: rgba(192,57,43,0.08);
-    color: #e74c3c;
-  }
+.video-stats {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 0; flex-wrap: wrap; gap: 16px;
+  border-top: 1px solid rgba(23,136,192,0.09);
+  border-bottom: 1px solid rgba(23,136,192,0.09);
+  margin-bottom: 26px;
+}
+.video-stats-left {
+  font-size: 11px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ivory-dim); opacity: 0.42;
+}
+.video-actions { display: flex; gap: 8px; }
 
-  /* ── Right: Sidebar ── */
-  .sidebar-column {
-    padding: 32px 32px 48px 28px;
-  }
-  .sidebar-title {
-    font-family: var(--font-display);
-    font-size: 14px;
-    font-weight: 400;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--gold-dim);
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .sidebar-title::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: rgba(201,168,76,0.15);
-  }
+.vote-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 9px 20px; border-radius: var(--radius-pill);
+  border: 1px solid rgba(23,136,192,0.18);
+  background: transparent; color: var(--ivory-dim);
+  font-family: var(--font-body); font-size: 13px; font-weight: 400;
+  cursor: pointer; transition: var(--t); letter-spacing: 0.04em;
+}
+.vote-btn:hover { border-color: rgba(23,136,192,0.4); color: var(--ivory); background: rgba(23,136,192,0.06); }
+.vote-btn.active { border-color: var(--blue-light); background: rgba(23,136,192,0.12); color: var(--blue-light); }
+.vote-btn[data-vote="dislike"].active { border-color: rgba(200,16,46,0.5); background: rgba(200,16,46,0.07); color: #f05070; }
 
-  /* Sidebar info card */
-  .info-card {
-    background: var(--noir-2);
-    border: 1px solid rgba(201,168,76,0.08);
-    border-radius: var(--radius-md);
-    padding: 20px;
-    margin-bottom: 16px;
-  }
-  .info-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
-    font-size: 12px;
-    letter-spacing: 0.05em;
-  }
-  .info-row:last-child { border-bottom: none; padding-bottom: 0; }
-  .info-label {
-    text-transform: uppercase;
-    color: var(--ivory-dim);
-    opacity: 0.4;
-  }
-  .info-value { color: var(--ivory); font-weight: 400; }
+/* Channel */
+.video-channel {
+  display: flex; align-items: center; gap: 14px; margin-bottom: 24px;
+}
+.channel-avatar {
+  width: 46px; height: 46px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--bg-4), var(--bg-5));
+  border: 1px solid rgba(23,136,192,0.25);
+  box-shadow: 0 0 0 3px rgba(23,136,192,0.06);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-size: 18px;
+  font-weight: 500; color: var(--blue-light); flex-shrink: 0;
+}
+.channel-name {
+  font-size: 14px; font-weight: 400; color: var(--ivory);
+  text-decoration: none; letter-spacing: 0.05em; transition: color var(--t);
+}
+.channel-name:hover { color: var(--blue-light); }
 
-  /* ── Responsive ── */
-  @media (max-width: 1024px) {
-    .watch-layout { grid-template-columns: 1fr; }
-    .player-column { padding: 24px 20px; border-right: none; border-bottom: 1px solid rgba(201,168,76,0.07); }
-    .sidebar-column { padding: 24px 20px; }
-  }
+.video-description {
+  font-size: 14px; line-height: 1.75; color: var(--ivory-dim); opacity: 0.65;
+  padding: 20px; border-radius: var(--radius-md);
+  background: var(--bg-2);
+  border: 1px solid rgba(23,136,192,0.07);
+  white-space: pre-wrap; margin-bottom: 24px;
+}
+
+.video-owner-actions { margin-top: 8px; }
+.delete-btn {
+  padding: 9px 22px; border-radius: var(--radius-sm);
+  border: 1px solid rgba(200,16,46,0.25);
+  background: transparent; color: rgba(200,16,46,0.6);
+  font-family: var(--font-body); font-size: 11px;
+  font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase;
+  cursor: pointer; transition: var(--t);
+}
+.delete-btn:hover { border-color: var(--crimson); background: rgba(200,16,46,0.08); color: #f05070; }
+
+/* ── Sidebar ── */
+.sidebar-column { padding: 36px 40px 56px 32px; }
+
+.sidebar-label {
+  font-size: 10px; font-weight: 500; letter-spacing: 0.28em;
+  text-transform: uppercase; color: var(--blue-dim);
+  margin-bottom: 20px;
+  display: flex; align-items: center; gap: 12px;
+}
+.sidebar-label::after { content: ''; flex: 1; height: 1px; background: rgba(23,136,192,0.14); }
+
+.info-card {
+  background: var(--bg-2);
+  border: 1px solid rgba(23,136,192,0.1);
+  border-radius: var(--radius-md); overflow: hidden;
+  margin-bottom: 16px;
+}
+/* Flag stripe on card */
+.info-card::before {
+  content: '';
+  display: block; height: 2px;
+  background: linear-gradient(to right, var(--blue) 33%, var(--crimson) 33%, var(--crimson) 34%, var(--green) 34%, var(--green) 67%, transparent 100%);
+  opacity: 0.4;
+}
+
+.info-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 13px 20px;
+  border-bottom: 1px solid rgba(23,136,192,0.05);
+  font-size: 12px; letter-spacing: 0.05em;
+  transition: var(--t);
+}
+.info-row:last-child { border-bottom: none; }
+.info-row:hover { background: rgba(23,136,192,0.03); }
+.info-label { text-transform: uppercase; color: var(--ivory-dim); opacity: 0.38; font-size: 10px; letter-spacing: 0.12em; }
+.info-value { color: var(--ivory); font-weight: 400; }
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .watch-layout { grid-template-columns: 1fr; }
+  .player-column { padding: 24px 20px; border-right: none; border-bottom: 1px solid rgba(23,136,192,0.08); }
+  .sidebar-column { padding: 24px 20px; }
+}
 </style>
 {% endblock %}
 
 {% block content %}
-
 <div class="watch-layout">
-  <!-- LEFT: Player + Details -->
-  <div class="player-column">
 
+  <!-- LEFT -->
+  <div class="player-column">
     <div class="video-player-wrap">
       <video id="video-player" controls preload="none" poster="{{ video.display_thumbnail_url }}"></video>
       <div id="video-error" class="video-error" style="display:none;">
@@ -295,9 +229,9 @@
     </div>
   </div>
 
-  <!-- RIGHT: Sidebar -->
+  <!-- RIGHT -->
   <div class="sidebar-column">
-    <div class="sidebar-title">Video ma'lumotlari</div>
+    <div class="sidebar-label">Video ma'lumotlari</div>
     <div class="info-card">
       <div class="info-row">
         <span class="info-label">Muallif</span>
@@ -315,10 +249,14 @@
         <span class="info-label">Likes</span>
         <span class="info-value">{{ video.likes }}</span>
       </div>
+      <div class="info-row">
+        <span class="info-label">Dislikes</span>
+        <span class="info-value">{{ video.dislikes }}</span>
+      </div>
     </div>
   </div>
-</div>
 
+</div>
 {% endblock %}
 
 {% block extra_js %}
@@ -328,55 +266,31 @@ const videoPlayer = document.getElementById("video-player");
 const videoError  = document.getElementById("video-error");
 const streamingUrl = '{{ video.streaming_url }}';
 const fallbackUrl  = '{{ video.optimized_url }}';
-
 if (Hls.isSupported()) {
-  const hls = new Hls({ startLevel: -1, capLevelToPlayerSize: true });
-  hls.loadSource(streamingUrl);
-  hls.attachMedia(videoPlayer);
-  hls.on(Hls.Events.ERROR, (event, data) => {
-    if (data.fatal) videoPlayer.src = fallbackUrl;
-  });
+  const hls = new Hls({ startLevel:-1, capLevelToPlayerSize:true });
+  hls.loadSource(streamingUrl); hls.attachMedia(videoPlayer);
+  hls.on(Hls.Events.ERROR, (e,d) => { if(d.fatal) videoPlayer.src = fallbackUrl; });
 } else if (videoPlayer.canPlayType("application/vnd.apple.mpegurl")) {
   videoPlayer.src = streamingUrl;
-} else {
-  videoPlayer.src = fallbackUrl;
-}
-
-videoPlayer.addEventListener("error", () => {
-  videoPlayer.style.display = "none";
-  videoError.style.display = "flex";
-});
+} else { videoPlayer.src = fallbackUrl; }
+videoPlayer.addEventListener("error", () => { videoPlayer.style.display="none"; videoError.style.display="flex"; });
 
 const csrf = '{{ csrf_token }}';
-
-function deleteVideo(videoId) {
-  if (!confirm("Haqiqatan ham o'chirmoqchimisiz?")) return;
-  fetch(`/${videoId}/delete/`, { method:"POST", headers:{"X-CSRFToken":csrf} })
-    .then(r => r.json())
-    .then(data => {
-      if (data.success) window.location.href = '{% url "videos:video_list" %}';
-      else alert(data.error || "O'chirishda xatolik.");
-    })
-    .catch(() => alert("O'chirishda xatolik"));
+function deleteVideo(id) {
+  if(!confirm("Haqiqatan ham o'chirmoqchimisiz?")) return;
+  fetch(`/${id}/delete/`,{method:"POST",headers:{"X-CSRFToken":csrf}})
+    .then(r=>r.json()).then(d=>{ if(d.success) location.href='{% url "videos:video_list" %}'; else alert(d.error||"Xatolik"); })
+    .catch(()=>alert("Xatolik"));
 }
-
-function vote(videoId, voteType) {
-  {% if not user.is_authenticated %}
-  window.location.href = '{% url "accounts:login" %}';
-  return;
-  {% endif %}
-  fetch(`/${videoId}/vote/`, {
-    method: "POST",
-    headers: { "Content-Type":"application/x-www-form-urlencoded", "X-CSRFToken":csrf },
-    body: `vote=${voteType}`
-  })
-    .then(r => r.json())
-    .then(data => {
-      document.getElementById("like-count").textContent    = data.likes;
-      document.getElementById("dislike-count").textContent = data.dislikes;
-      document.querySelectorAll(".vote-btn").forEach(btn => btn.classList.remove("active"));
-      if (data.user_vote === 1)  document.querySelector('[data-vote="like"]').classList.add("active");
-      else if (data.user_vote === -1) document.querySelector('[data-vote="dislike"]').classList.add("active");
+function vote(id, type) {
+  {% if not user.is_authenticated %}window.location.href='{% url "accounts:login" %}';return;{% endif %}
+  fetch(`/${id}/vote/`,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded","X-CSRFToken":csrf},body:`vote=${type}`})
+    .then(r=>r.json()).then(d=>{
+      document.getElementById("like-count").textContent=d.likes;
+      document.getElementById("dislike-count").textContent=d.dislikes;
+      document.querySelectorAll(".vote-btn").forEach(b=>b.classList.remove("active"));
+      if(d.user_vote===1) document.querySelector('[data-vote="like"]').classList.add("active");
+      else if(d.user_vote===-1) document.querySelector('[data-vote="dislike"]').classList.add("active");
     });
 }
 </script>
