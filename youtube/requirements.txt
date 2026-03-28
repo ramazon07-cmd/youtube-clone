@@ -24,3 +24,4 @@ sqlparse==0.5.5
 typing-extensions==4.15.0
 typing-inspection==0.4.2
 urllib3==1.26.20
+whitenoise==6.7.0
