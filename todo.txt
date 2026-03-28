@@ -1,0 +1,6 @@
+
+2. Translation for all of these
+3. Video Detail
+4. Adding comments to the video detail
+5. Adding profile page for the user
+6. Enhancing video uploading page

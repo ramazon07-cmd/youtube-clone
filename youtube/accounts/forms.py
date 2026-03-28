@@ -19,15 +19,3 @@ class CustomUserCreationForm(UserCreationForm):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-

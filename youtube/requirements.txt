@@ -4,6 +4,7 @@ asgiref==3.11.1
 certifi==2026.2.25
 charset-normalizer==3.4.5
 distro==1.9.0
+dj-database-url==3.1.2
 django==6.0.3
 h11==0.16.0
 httpcore==1.0.9
@@ -11,6 +12,7 @@ httpx==0.28.1
 hypothesis==6.151.9
 idna==3.11
 imagekitio==3.2.0
+psycopg2-binary==2.9.11
 pydantic==2.12.5
 pydantic-core==2.41.5
 python-dotenv==1.2.2

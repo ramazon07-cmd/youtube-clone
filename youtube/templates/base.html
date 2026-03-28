@@ -389,13 +389,6 @@
         </svg>
       </a>
       <ul class="navbar-nav">
-        <li>
-          <select id="langSwitcher" class="lang-switcher" aria-label="Language">
-            <option value="uz">O'zbek</option>
-            <option value="ru">Русский</option>
-            <option value="en">English</option>
-          </select>
-        </li>
         {% if user.is_authenticated %}
         <li><a href="{% url 'videos:video_upload' %}" class="nav-link btn-upload" data-i18n="upload">Yuklash</a></li>
         <li><span class="nav-username">{{ user.username }}</span></li>
@@ -426,8 +419,8 @@
     <footer class="site-footer">
       <p>
         <span data-i18n="footerText">© 2025 UzTube — Built by</span>
-        <a href="#" target="_blank" rel="noopener">Your Name</a> &nbsp;·&nbsp;
-        <a href="https://github.com/yourusername" target="_blank" rel="noopener" data-i18n="github">GitHub</a>
+        <a href="#" target="_blank" rel="noopener">Ramazon</a> &nbsp;·&nbsp;
+        <a href="https://github.com/ramazon07_cmd" target="_blank" rel="noopener" data-i18n="github">GitHub</a>
         &nbsp;·&nbsp; 🇺🇿
       </p>
     </footer>
