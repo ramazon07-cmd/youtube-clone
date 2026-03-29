@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#0f0f0f"/>
+  <rect x="80" y="80" width="1040" height="470" rx="28" fill="#1a1a1a" stroke="#1EB2FF" stroke-width="4"/>
+  <circle cx="260" cy="315" r="88" fill="#1EB2FF"/>
+  <polygon points="230,260 230,370 330,315" fill="#00A878"/>
+  <text x="390" y="325" fill="#f1f1f1" font-family="Arial, sans-serif" font-size="96" font-weight="700">UzTube</text>
+  <text x="390" y="390" fill="#aaaaaa" font-family="Arial, sans-serif" font-size="38">O'zbekiston video platformasi</text>
+</svg>
