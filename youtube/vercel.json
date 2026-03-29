@@ -1,7 +1,7 @@
 {
   "builds": [{ "src": "youtube/wsgi.py", "use": "@vercel/python" }],
   "routes": [
-    { "src": "/static/(.*)", "dest": "/static/$1" },
+    { "src": "/static/(.*)", "dest": "/youtube/staticfiles/$1" },
     { "src": "/(.*)", "dest": "youtube/wsgi.py" }
   ]
 }
